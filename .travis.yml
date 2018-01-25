@@ -1,0 +1,5 @@
+language: go
+go_import_path: github.com/pmorie/go-open-service-broker-skeleton
+go:
+  - 1.8.x
+script: "make build test"                                

@@ -22,7 +22,7 @@ type Implementation struct {
 
 var _ BusinessLogic = &Implementation{}
 
-func (*Implementation) GetCatalog(w http.ResponseWriter, r *http.Request) (*v2.CatalogResponse, error) {
+func (b *Implementation) GetCatalog(w http.ResponseWriter, r *http.Request) (*v2.CatalogResponse, error) {
 	return nil, nil
 }
 
