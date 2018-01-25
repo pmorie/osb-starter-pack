@@ -11,10 +11,6 @@ func getBrokerAPIVersionFromRequest(r *http.Request) string {
 	return r.Header.Get(v2.APIVersionHeader)
 }
 
-func validateBrokerAPIVersion(version string) error {
-	return nil
-}
-
 // writeResponse will serialize 'object' to the HTTP ResponseWriter
 // using the 'code' as the HTTP status code
 func writeResponse(w http.ResponseWriter, code int, object interface{}) {

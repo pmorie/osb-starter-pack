@@ -10,12 +10,12 @@ import (
 
 // APISurface is a type that describes a OSB REST API surface.  APISurface is
 // responsible for decoding HTTP requests and transforming them into the request
-// object for each operation and transforming responses and errors returned
-// from the broker's internal business logic into the correct places in the HTTP
+// object for each operation and transforming responses and errors returned from
+// the broker's internal business logic into the correct places in the HTTP
 // response.
 type APISurface struct {
-	// Router is a mux.Router that registers the handlers for the different
-	// OSB API operations.
+	// Router is a mux.Router that registers the handlers for the different OSB
+	// API operations.
 	Router *mux.Router
 	// BusinessLogic contains the business logic that provides the
 	// implementation for the different OSB API operations.
@@ -42,10 +42,11 @@ func NewAPISurface() *APISurface {
 
 // GetCatalogHandler is a Handler for catalog requests to the broker.
 // GetCatalogHandler validates the request, delegates to the broker
-// BusinessLogic to get the CatalogResponse, and handles writing the HTTP response.
+// BusinessLogic to get the CatalogResponse, and handles writing the HTTP
+// response.
 func (s *APISurface) GetCatalogHandler(w http.ResponseWriter, r *http.Request) {
 	version := getBrokerAPIVersionFromRequest(r)
-	if err := validateBrokerAPIVersion(version); err != nil {
+	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		// write the error back
 	}
 
@@ -62,8 +63,8 @@ func (s *APISurface) GetCatalogHandler(w http.ResponseWriter, r *http.Request) {
 func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO
 
-	// this layer should deserialize body/unpack request params into
-	// a ProvisionRequest to pass to the business logic layer
+	// this layer should deserialize body/unpack request params into a
+	// ProvisionRequest to pass to the business logic layer
 
 	// this layer also handles serializing the response or error returned
 	// from the business logic layer
