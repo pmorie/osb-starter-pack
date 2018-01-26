@@ -27,6 +27,8 @@ type APISurface struct {
 const (
 	instanceIDVarKey = "instance_id"
 	bindingIDVarKey  = "binding_id"
+	serviceIDVarKey  = "service_id"
+	planIDVarKey     = "plan_id"
 )
 
 // NewAPISurface returns a new, ready-to-go APISurface.
@@ -128,7 +130,45 @@ func (s *APISurface) DeprovisionHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// TODO
+	request, err := unpackDeprovisionRequest(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	glog.Infof("Received DeprovisionRequest for instanceID %q", request.InstanceID)
+
+	response, err := s.BusinessLogic.Deprovision(request, w, r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	status := http.StatusOK
+	if response.Async {
+		status = http.StatusAccepted
+	}
+
+	writeResponse(w, status, response)
+}
+
+func unpackDeprovisionRequest(r *http.Request) (*osb.DeprovisionRequest, error) {
+	osbRequest := &osb.DeprovisionRequest{}
+	if err := unmarshalRequestBody(r, osbRequest); err != nil {
+		return nil, err
+	}
+
+	vars := mux.Vars(r)
+	osbRequest.InstanceID = vars[instanceIDVarKey]
+	osbRequest.ServiceID = vars[serviceIDVarKey]
+	osbRequest.PlanID = vars[planIDVarKey]
+
+	asyncQueryParamVal := r.URL.Query().Get(asyncQueryParamKey)
+	if strings.ToLower(asyncQueryParamVal) == "true" {
+		osbRequest.AcceptsIncomplete = true
+	}
+
+	return osbRequest, nil
 }
 
 // LastOperationHandler is the mux handler that dispatches last-operation
