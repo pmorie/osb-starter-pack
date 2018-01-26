@@ -2,6 +2,7 @@ package broker
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/pmorie/go-open-service-broker-client/v2"
@@ -23,4 +24,18 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(data)
+}
+
+func unmarshalRequestBody(request *http.Request, obj interface{}) error {
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
