@@ -3,6 +3,8 @@ package broker
 import (
 	"net/http"
 
+	"gopkg.in/yaml.v2"
+
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
@@ -141,7 +143,29 @@ var _ BusinessLogic = &Implementation{}
 
 func (b *Implementation) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
 	// Your catalog business logic goes here
-	return nil, nil
+	response := &osb.CatalogResponse{}
+
+	data := `
+---
+services:
+- name: skeleton-example-service
+  id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a
+  description: The example service from the broker skeleton!
+  bindable: true
+  plan_updateable: true
+  plans:
+  - name: default
+    id: 86064792-7ea2-467b-af93-ac9694d96d5b
+    description: The default plan for the skeleton example service
+    free: true
+`
+
+	err := yaml.Unmarshal([]byte(data), &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func (b *Implementation) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {

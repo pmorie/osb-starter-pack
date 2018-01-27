@@ -1,0 +1,6 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ClusterServiceBroker
+metadata:
+  name: broker-skeleton
+spec:
+  url: http://broker-skeleton-service-broker-skeleton.broker-skeleton.svc.cluster.local
