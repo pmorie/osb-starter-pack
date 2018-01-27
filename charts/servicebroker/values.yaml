@@ -9,3 +9,4 @@ tls:
   cert:
   # base-64 encoded PEM data for the private key matching the certificate
   key:
+deployClusterServiceBroker: true

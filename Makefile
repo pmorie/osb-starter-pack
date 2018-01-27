@@ -14,3 +14,8 @@ image: linux
 
 clean:
 	rm -f servicebroker
+
+deploy-helm: image
+	helm install charts/servicebroker \
+	--name broker-skeleton --namespace broker-skeleton \
+	--set imagePullPolicy=Never
