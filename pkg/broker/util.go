@@ -26,6 +26,19 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 	w.Write(data)
 }
 
+type e struct {
+	Error string
+}
+
+func writeErrorResponse(w http.ResponseWriter, code int, err error) {
+	type e struct {
+		Error string
+	}
+	writeResponse(w, code, &e{
+		Error: err.Error(),
+	})
+}
+
 func unmarshalRequestBody(request *http.Request, obj interface{}) error {
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {

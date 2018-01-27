@@ -12,11 +12,14 @@ import (
 
 	"github.com/golang/glog"
 
+	"github.com/pmorie/go-open-service-broker-skeleton/cmd/servicebroker/user"
 	"github.com/pmorie/go-open-service-broker-skeleton/pkg/broker"
 	"github.com/pmorie/go-open-service-broker-skeleton/pkg/server"
 )
 
 var options struct {
+	user.Options
+
 	Port    int
 	TLSCert string
 	TLSKey  string
@@ -26,6 +29,7 @@ func init() {
 	flag.IntVar(&options.Port, "port", 8005, "use '--port' option to specify the port for broker to listen on")
 	flag.StringVar(&options.TLSCert, "tlsCert", "", "base-64 encoded PEM block to use as the certificate for TLS. If '--tlsCert' is used, then '--tlsKey' must also be used. If '--tlsCert' is not used, then TLS will not be used.")
 	flag.StringVar(&options.TLSKey, "tlsKey", "", "base-64 encoded PEM block to use as the private key matching the TLS certificate. If '--tlsKey' is used, then '--tlsCert' must also be used")
+	user.AddUserFlags(&options.Options)
 	flag.Parse()
 }
 

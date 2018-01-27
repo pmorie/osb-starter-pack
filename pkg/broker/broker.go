@@ -36,7 +36,8 @@ func NewAPISurface() *APISurface {
 	router := mux.NewRouter()
 
 	s := &APISurface{
-		Router: router,
+		Router:        router,
+		BusinessLogic: &Implementation{},
 	}
 
 	// TODO: update
@@ -216,5 +217,5 @@ func writeError(w http.ResponseWriter, err error) {
 		return
 	}
 
-	writeResponse(w, http.StatusInternalServerError, err)
+	writeErrorResponse(w, http.StatusInternalServerError, err)
 }

@@ -22,9 +22,17 @@
 
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/golang/glog"
+
+[[constraint]]
   name = "github.com/gorilla/mux"
   version = "1.6.1"
 
 [[constraint]]
   branch = "master"
   name = "github.com/pmorie/go-open-service-broker-client"
+
+[[constraint]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"
