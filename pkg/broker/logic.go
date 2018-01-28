@@ -3,12 +3,8 @@ package broker
 import (
 	"net/http"
 
-	"gopkg.in/yaml.v2"
-
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
-
-// TODO: move BusinessLogic into its own package
 
 // BusinessLogic contains the business logic for the broker's operations.
 // BusinessLogic is the interface broker authors should implement and is
@@ -132,67 +128,4 @@ type BusinessLogic interface {
 	//
 	// https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#unbinding
 	Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
-}
-
-// Implementation provides an implementation of the BusinessLogic interface.
-type Implementation struct {
-	// You can add fields here or make your own type that implements BusinessLogic!
-}
-
-var _ BusinessLogic = &Implementation{}
-
-func (b *Implementation) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
-	// Your catalog business logic goes here
-	response := &osb.CatalogResponse{}
-
-	data := `
----
-services:
-- name: skeleton-example-service
-  id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a
-  description: The example service from the broker skeleton!
-  bindable: true
-  plan_updateable: true
-  plans:
-  - name: default
-    id: 86064792-7ea2-467b-af93-ac9694d96d5b
-    description: The default plan for the skeleton example service
-    free: true
-`
-
-	err := yaml.Unmarshal([]byte(data), &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
-func (b *Implementation) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
-	// Your provision business logic goes here
-	return nil, nil
-}
-
-func (b *Implementation) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
-	// Your deprovision business logic goes here
-	return nil, nil
-}
-
-func (b *Implementation) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
-	// Your last-operation business logic goes here
-	return nil, nil
-}
-
-func (b *Implementation) Bind(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
-	// Your bind business logic goes here
-	return nil, nil
-}
-
-func (b *Implementation) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
-	// Your unbind business logic goes here
-	return nil, nil
-}
-
-func (b *Implementation) ValidateBrokerAPIVersion(version string) error {
-	return nil
 }

@@ -12,9 +12,9 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/pmorie/go-open-service-broker-skeleton/cmd/servicebroker/user"
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/broker"
+	"github.com/pmorie/go-open-service-broker-skeleton/pkg/rest"
 	"github.com/pmorie/go-open-service-broker-skeleton/pkg/server"
+	"github.com/pmorie/go-open-service-broker-skeleton/pkg/user"
 )
 
 var options struct {
@@ -60,10 +60,13 @@ func runWithContext(ctx context.Context) error {
 
 	addr := ":" + strconv.Itoa(options.Port)
 
-	api := broker.NewAPISurface()
+	api, err := rest.NewAPISurface(options.Options)
+	if err != nil {
+		return err
+	}
+
 	s := server.New(*api)
 
-	var err error
 	if options.TLSCert == "" && options.TLSKey == "" {
 		err = s.Run(ctx, addr)
 	} else {
