@@ -6,7 +6,7 @@ import (
 
 // Options holds the options specified by the user's code on the command
 // line.  Users should add their own options here and add flags for them in
-// AddUserFlags().
+// AddUserFlags.
 type Options struct {
 	CatalogPath string
 }

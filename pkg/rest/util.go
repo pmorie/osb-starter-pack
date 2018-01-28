@@ -1,4 +1,4 @@
-package broker
+package rest
 
 import (
 	"encoding/json"
@@ -6,6 +6,11 @@ import (
 	"net/http"
 
 	"github.com/pmorie/go-open-service-broker-client/v2"
+)
+
+// TODO: export in go-open-service-broker-client
+const (
+	asyncQueryParamKey = "accepts_incomplete"
 )
 
 func getBrokerAPIVersionFromRequest(r *http.Request) string {
