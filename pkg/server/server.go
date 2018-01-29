@@ -8,19 +8,32 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/gorilla/mux"
 
 	"github.com/pmorie/go-open-service-broker-skeleton/pkg/rest"
 )
 
-// Server might be redundant :)
 type Server struct {
-	api rest.APISurface
+	// Router is a mux.Router that registers the handlers for the different OSB
+	// API operations.
+	Router *mux.Router
 }
 
-// New creates a new server.
-func New(api rest.APISurface) *Server {
+// New creates a new Router and registers all the necessary endpoints and handlers.
+func New(api *rest.APISurface) *Server {
+	router := mux.NewRouter()
+
+	router.HandleFunc("/v2/catalog", api.GetCatalogHandler).Methods("GET")
+	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", api.LastOperationHandler).Methods("GET")
+	router.HandleFunc("/v2/service_instances/{instance_id}", api.ProvisionHandler).Methods("PUT")
+	router.HandleFunc("/v2/service_instances/{instance_id}", api.DeprovisionHandler).Methods("DELETE")
+	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.BindHandler).Methods("PUT")
+	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.UnbindHandler).Methods("DELETE")
+
+	// TODO: update
+
 	return &Server{
-		api: api,
+		Router: router,
 	}
 }
 
@@ -62,7 +75,7 @@ func (s *Server) run(ctx context.Context, addr string, listenAndServe func(srv *
 	glog.Infof("Starting server on %s\n", addr)
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: s.api.Router,
+		Handler: s.Router,
 	}
 	go func() {
 		<-ctx.Done()

@@ -65,7 +65,7 @@ func runWithContext(ctx context.Context) error {
 		return err
 	}
 
-	s := server.New(*api)
+	s := server.New(api)
 
 	if options.TLSCert == "" && options.TLSKey == "" {
 		err = s.Run(ctx, addr)

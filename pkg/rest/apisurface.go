@@ -13,17 +13,12 @@ import (
 	"github.com/pmorie/go-open-service-broker-skeleton/pkg/user"
 )
 
-// TODO: union this package with server
-
-// APISurface is a type that describes a OSB REST API surface.  APISurface is
+// APISurface is a type that describes a OSB REST API surface. APISurface is
 // responsible for decoding HTTP requests and transforming them into the request
 // object for each operation and transforming responses and errors returned from
 // the broker's internal business logic into the correct places in the HTTP
 // response.
 type APISurface struct {
-	// Router is a mux.Router that registers the handlers for the different OSB
-	// API operations.
-	Router *mux.Router
 	// BusinessLogic contains the business logic that provides the
 	// implementation for the different OSB API operations.
 	BusinessLogic broker.BusinessLogic
@@ -38,28 +33,17 @@ const (
 
 // NewAPISurface returns a new, ready-to-go APISurface.
 func NewAPISurface(options user.Options) (*APISurface, error) {
-	router := mux.NewRouter()
 
 	businessLogic, err := user.NewBusinessLogic(options)
 	if err != nil {
 		return nil, err
 	}
 
-	s := &APISurface{
-		Router:        router,
+	api := &APISurface{
 		BusinessLogic: businessLogic,
 	}
 
-	// TODO: update
-
-	router.HandleFunc("/v2/catalog", s.GetCatalogHandler).Methods("GET")
-	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", s.LastOperationHandler).Methods("GET")
-	router.HandleFunc("/v2/service_instances/{instance_id}", s.ProvisionHandler).Methods("PUT")
-	router.HandleFunc("/v2/service_instances/{instance_id}", s.DeprovisionHandler).Methods("DELETE")
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", s.BindHandler).Methods("PUT")
-	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", s.UnbindHandler).Methods("DELETE")
-
-	return s, nil
+	return api, nil
 }
 
 // GetCatalogHandler is the mux handler that dispatches requests to get the
