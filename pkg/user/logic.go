@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"sync"
 
 	"gopkg.in/yaml.v2"
 
@@ -16,13 +17,17 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	// For example, if your BusinessLogic requires a parameter from the command
 	// line, you would unpack it from the Options and set it on the
 	// BusinessLogic here.
-	return &BusinessLogic{}, nil
+	return &BusinessLogic{
+		instances: make(map[string]*exampleInstance, 10),
+	}, nil
 }
 
 // BusinessLogic provides an implementation of the broker.BusinessLogic
 // interface.
 type BusinessLogic struct {
-	// Add fields here!
+	// Add fields here! These fields are provided purely as an example
+	sync.RWMutex
+	instances map[string]*exampleInstance
 }
 
 var _ broker.BusinessLogic = &BusinessLogic{}
@@ -56,29 +61,65 @@ services:
 
 func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
 	// Your provision business logic goes here
-	return nil, nil
+
+	// example implementation:
+	b.Lock()
+	defer b.Unlock()
+
+	exampleInstance := &exampleInstance{ID: pr.InstanceID, Params: pr.Parameters}
+	b.instances[pr.InstanceID] = exampleInstance
+
+	return &osb.ProvisionResponse{}, nil
 }
 
 func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
 	// Your deprovision business logic goes here
-	return nil, nil
+
+	// example implementation:
+	b.Lock()
+	defer b.Unlock()
+
+	delete(b.instances, request.InstanceID)
+
+	return &osb.DeprovisionResponse{}, nil
 }
 
 func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
 	// Your last-operation business logic goes here
+
 	return nil, nil
 }
 
 func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
 	// Your bind business logic goes here
-	return nil, nil
+
+	// example implementation:
+	b.Lock()
+	defer b.Unlock()
+
+	instance, ok := b.instances[request.InstanceID]
+	if !ok {
+		return nil, osb.HTTPStatusCodeError{
+			StatusCode: http.StatusNotFound,
+		}
+	}
+
+	return &osb.BindResponse{Credentials: instance.Params}, nil
 }
 
 func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
 	// Your unbind business logic goes here
-	return nil, nil
+	return &osb.UnbindResponse{}, nil
 }
 
 func (b *BusinessLogic) ValidateBrokerAPIVersion(version string) error {
 	return nil
+}
+
+// example types
+
+// exampleInstance is intended as an example of a type that holds information about a service instance
+type exampleInstance struct {
+	ID     string
+	Params map[string]interface{}
 }
