@@ -10,12 +10,12 @@ linux:
 
 image: linux
 	cp servicebroker image/
-	docker build image/ -t osb-skeleton/servicebroker
+	docker build image/ -t osb-starter-pack/broker
 
 clean:
 	rm -f servicebroker
 
 deploy-helm: image
 	helm install charts/servicebroker \
-	--name broker-skeleton --namespace broker-skeleton \
+	--name osb-starter-pack --namespace osb-starter-pack \
 	--set imagePullPolicy=Never
