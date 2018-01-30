@@ -37,6 +37,9 @@ spec:
         - --tlsKey
         - "{{ .Values.tls.key }}"
         {{- end}}
+        - -v
+        - "5"
+        - -logtostderr
         ports:
         - containerPort: 8080
         readinessProbe:

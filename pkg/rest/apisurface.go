@@ -95,6 +95,7 @@ func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, status, response)
 }
 
+// unpackProvisionRequest unpacks an osb request from the given HTTP request.
 func unpackProvisionRequest(r *http.Request) (*osb.ProvisionRequest, error) {
 	// unpacking an osb request from an http request involves:
 	// - unmarshaling the request body
@@ -147,11 +148,9 @@ func (s *APISurface) DeprovisionHandler(w http.ResponseWriter, r *http.Request) 
 	writeResponse(w, status, response)
 }
 
+// unpackDeprovisionRequest unpacks an osb request from the given HTTP request.
 func unpackDeprovisionRequest(r *http.Request) (*osb.DeprovisionRequest, error) {
 	osbRequest := &osb.DeprovisionRequest{}
-	if err := unmarshalRequestBody(r, osbRequest); err != nil {
-		return nil, err
-	}
 
 	vars := mux.Vars(r)
 	osbRequest.InstanceID = vars[instanceIDVarKey]
@@ -187,7 +186,35 @@ func (s *APISurface) BindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO
+	request, err := unpackBindRequest(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	glog.Infof("Received BindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
+
+	response, err := s.BusinessLogic.Bind(request, w, r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, response)
+}
+
+// unpackBindRequest unpacks an osb request from the given HTTP request.
+func unpackBindRequest(r *http.Request) (*osb.BindRequest, error) {
+	osbRequest := &osb.BindRequest{}
+	if err := unmarshalRequestBody(r, osbRequest); err != nil {
+		return nil, err
+	}
+
+	vars := mux.Vars(r)
+	osbRequest.InstanceID = vars[instanceIDVarKey]
+	osbRequest.BindingID = vars[bindingIDVarKey]
+
+	return osbRequest, nil
 }
 
 // UnbindHandler is the mux handler that dispatches unbind requests to the
@@ -199,7 +226,32 @@ func (s *APISurface) UnbindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO
+	request, err := unpackUnbindRequest(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	glog.Infof("Received UnbindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
+
+	response, err := s.BusinessLogic.Unbind(request, w, r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, response)
+}
+
+// unpackUnbindRequest unpacks an osb request from the given HTTP request.
+func unpackUnbindRequest(r *http.Request) (*osb.UnbindRequest, error) {
+	osbRequest := &osb.UnbindRequest{}
+
+	vars := mux.Vars(r)
+	osbRequest.InstanceID = vars[instanceIDVarKey]
+	osbRequest.BindingID = vars[bindingIDVarKey]
+
+	return osbRequest, nil
 }
 
 // writeError accepts any error and writes it to the given ResponseWriter.

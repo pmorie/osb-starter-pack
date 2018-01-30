@@ -67,6 +67,8 @@ func runWithContext(ctx context.Context) error {
 
 	s := server.New(api)
 
+	glog.Infof("Starting broker!")
+
 	if options.TLSCert == "" && options.TLSKey == "" {
 		err = s.Run(ctx, addr)
 	} else {
