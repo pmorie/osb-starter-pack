@@ -10,7 +10,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/rest"
+	"github.com/pmorie/osb-starter-pack/pkg/rest"
 )
 
 type Server struct {

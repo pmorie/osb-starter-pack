@@ -1,6 +1,6 @@
-# go-open-service-broker-skeleton
+# osb-starter-pack
 
-[![Build Status](https://travis-ci.org/pmorie/go-open-service-broker-skeleton.svg?branch=master)](https://travis-ci.org/pmorie/go-open-service-broker-skeleton "Travis")
+[![Build Status](https://travis-ci.org/pmorie/osb-starter-pack.svg?branch=master)](https://travis-ci.org/pmorie/osb-starter-pack "Travis")
 
 A go quickstart for creating service brokers that implement the
 [Open Service Broker API](https://github.com/openservicebrokerapi/servicebroker).
