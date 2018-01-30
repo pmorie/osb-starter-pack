@@ -12,9 +12,9 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/rest"
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/server"
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/user"
+	"github.com/pmorie/osb-starter-pack/pkg/rest"
+	"github.com/pmorie/osb-starter-pack/pkg/server"
+	"github.com/pmorie/osb-starter-pack/pkg/user"
 )
 
 var options struct {

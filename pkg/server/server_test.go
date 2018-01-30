@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/broker"
-	"github.com/pmorie/go-open-service-broker-skeleton/pkg/rest"
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )

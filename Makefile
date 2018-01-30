@@ -1,12 +1,12 @@
 build:
-	go build -i github.com/pmorie/go-open-service-broker-skeleton/cmd/servicebroker
+	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
 
 test:
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build --ldflags="-s" github.com/pmorie/go-open-service-broker-skeleton/cmd/servicebroker
+	go build --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
 
 image: linux
 	cp servicebroker image/

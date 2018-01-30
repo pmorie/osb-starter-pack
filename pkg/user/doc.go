@@ -7,4 +7,4 @@
 //   business logic
 // - The NewBusinessLogic function, which creates a BusinessLogic from the
 //   Options the program is run with
-package user // import "github.com/pmorie/go-open-service-broker-skeleton/pkg/user"
+package user // import "github.com/pmorie/osb-starter-pack/pkg/user"
