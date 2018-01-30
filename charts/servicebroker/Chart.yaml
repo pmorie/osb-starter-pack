@@ -1,3 +1,3 @@
-name: broker-skeleton
-description: a chart for the service-broker-skeleton
+name: osb-starter-pack
+description: a chart for the osb-starter-pack
 version: 0.0.1

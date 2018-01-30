@@ -2,7 +2,7 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ClusterServiceBroker
 metadata:
-  name: broker-skeleton
+  name: osb-starter-pack
 spec:
-  url: http://broker-skeleton-broker-skeleton.broker-skeleton.svc.cluster.local
+  url: http://osb-starter-pack-osb-starter-pack.osb-starter-pack.svc.cluster.local
 {{- end }}
