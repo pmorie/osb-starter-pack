@@ -25,4 +25,4 @@ deploy-helm: image
 
 deploy-openshift: image
 	oc new-project osb-starter-pack
-	oc process -f openshift/broker-skeleton.yaml | oc create -f -
+	oc process -f openshift/starter-pack.yaml | oc create -f -
