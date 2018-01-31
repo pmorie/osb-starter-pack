@@ -10,12 +10,19 @@ linux:
 
 image: linux
 	cp servicebroker image/
-	docker build image/ -t osb-skeleton/servicebroker
+	docker build image/ -t quay.io/osb-starter-pack/servicebroker
 
 clean:
 	rm -f servicebroker
+
+push: image
+	docker push quay.io/osb-starter-pack/servicebroker:latest
 
 deploy-helm: image
 	helm install charts/servicebroker \
 	--name broker-skeleton --namespace broker-skeleton \
 	--set imagePullPolicy=Never
+
+deploy-openshift: image
+	oc new-project osb-starter-pack
+	oc process -f openshift/broker-skeleton.yaml | oc create -f -
