@@ -39,16 +39,39 @@ func (b *BusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb
 	data := `
 ---
 services:
-- name: skeleton-example-service
+- name: example-starter-pack-service
   id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a
-  description: The example service from the broker skeleton!
+  description: The example service from the osb starter pack!
   bindable: true
   plan_updateable: true
+  metadata:
+    displayName: "Example starter-pack service"
+    imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
   plans:
   - name: default
     id: 86064792-7ea2-467b-af93-ac9694d96d5b
-    description: The default plan for the skeleton example service
+    description: The default plan for the starter pack example service
     free: true
+    schemas:
+      service_instance:
+        create:
+          "$schema": "http://json-schema.org/draft-04/schema"
+          "type": "object"
+          "title": "Parameters"
+          "properties":
+          - "name":
+              "title": "Some Name"
+              "type": "string"
+              "maxLength": 63
+              "default": "My Name"
+          - "color":
+              "title": "Color"
+              "type": "string"
+              "default": "Clear"
+              "enum":
+              - "Clear"
+              - "Beige"
+              - "Grey"
 `
 
 	err := yaml.Unmarshal([]byte(data), &response)
