@@ -27,10 +27,9 @@ func New(api *rest.APISurface) *Server {
 	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", api.LastOperationHandler).Methods("GET")
 	router.HandleFunc("/v2/service_instances/{instance_id}", api.ProvisionHandler).Methods("PUT")
 	router.HandleFunc("/v2/service_instances/{instance_id}", api.DeprovisionHandler).Methods("DELETE")
+	router.HandleFunc("/v2/service_instances/{instance_id}", api.UpdateHandler).Methods("PATCH")
 	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.BindHandler).Methods("PUT")
 	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.UnbindHandler).Methods("DELETE")
-
-	// TODO: update
 
 	return &Server{
 		Router: router,

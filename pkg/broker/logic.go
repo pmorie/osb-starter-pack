@@ -128,4 +128,23 @@ type BusinessLogic interface {
 	//
 	// https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#unbinding
 	Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
+	// Update encapsulates the business logic for an update operation and
+	// returns a osb.UpdateInstanceResponse or an error. Update updates the
+	// instance.
+	//
+	// The parameters are:
+	// - a osb.UpdateInstanceRequest created from the original http request
+	// - a response writer, in case fine-grained control over the response is
+	//   required
+	// - the original http request, in case access is required (to get special
+	//   request headers, for example)
+	//
+	// Implementers should return a UpdateInstanceResponse for a successful operation or
+	// an error. The APISurface handles translating UpdateInstanceResponses or errors
+	// into the correct form in the http response.
+	//
+	// For more information, see:
+	//
+	// https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#updating-a-service-instance
+	Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
 }
