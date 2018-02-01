@@ -21,6 +21,7 @@ type FakeBusinessLogic struct {
 	lastOperation func(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error)
 	bind          func(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error)
 	unbind        func(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
+	update        func(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
 }
 
 var _ broker.BusinessLogic = &FakeBusinessLogic{}
@@ -51,6 +52,10 @@ func (b *FakeBusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWr
 
 func (b *FakeBusinessLogic) ValidateBrokerAPIVersion(version string) error {
 	return nil
+}
+
+func (b *FakeBusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+	return b.update(request, w, r)
 }
 
 func TestGetCatalog(t *testing.T) {
