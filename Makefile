@@ -10,7 +10,7 @@ linux:
 
 image: linux
 	cp servicebroker image/
-	docker build image/ -t quay.io/osb-starter-pack/servicebroker
+	sudo docker build image/ -t quay.io/osb-starter-pack/servicebroker
 
 clean:
 	rm -f servicebroker

@@ -17,7 +17,7 @@ Open Service Broker.
 
 You'll need:
 
-- A running [kubernetes](https://github.com/kubernetes/kubernetes) cluster
+- A running [kubernetes](https://github.com/kubernetes/kubernetes) or [openshift](https://github.com/openshift/origin/) cluster
 - The [service-catalog](https://github.com/kubernetes-incubator/service-catalog)
   installed in that cluster
 
@@ -29,15 +29,16 @@ in the cluster.
 You can just clone this project and deploy it to start poking around right away:
 
 ```console
-# clone the repo
-$ git clone git://github.com/pmorie/osb-starter-pack  
+# clone the repo and change into the repo
+$ git clone git://github.com/pmorie/osb-starter-pack
+$ cd osb-starter-pack
 
 # You can deploy two different ways: helm or openshift templates
 
 # deploy with helm
 $ make deploy-helm
 
-# deploy with openshift templates
+# deploy with openshift templates (Note: You must already be logged into an OpenShift cluster)
 $ make deploy-openshift
 ```
 
