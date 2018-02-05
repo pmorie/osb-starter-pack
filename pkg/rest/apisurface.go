@@ -265,3 +265,48 @@ func writeError(w http.ResponseWriter, err error) {
 
 	writeErrorResponse(w, http.StatusInternalServerError, err)
 }
+
+// UpdateHandler is the mux handler that dispatches Update requests to the
+// broker's BusinessLogic.
+func (s *APISurface) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	version := getBrokerAPIVersionFromRequest(r)
+	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
+		writeError(w, err)
+		return
+	}
+
+	request, err := unpackUpdateRequest(r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	glog.Infof("Received Update Request for instanceID %q", request.InstanceID)
+
+	response, err := s.BusinessLogic.Update(request, w, r)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	status := http.StatusOK
+	if response.Async {
+		status = http.StatusAccepted
+	}
+
+	writeResponse(w, status, response)
+}
+
+func unpackUpdateRequest(r *http.Request) (*osb.UpdateInstanceRequest, error) {
+	osbRequest := &osb.UpdateInstanceRequest{}
+
+	vars := mux.Vars(r)
+	osbRequest.ServiceID = vars[serviceIDVarKey]
+
+	planID := vars[planIDVarKey]
+	if planID != "" {
+		osbRequest.PlanID = &planID
+	}
+
+	return osbRequest, nil
+}

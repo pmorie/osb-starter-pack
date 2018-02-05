@@ -135,6 +135,11 @@ func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter
 	return &osb.UnbindResponse{}, nil
 }
 
+func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+	// Your logic for updating a service goes here.
+	return &osb.UpdateInstanceResponse{}, nil
+}
+
 func (b *BusinessLogic) ValidateBrokerAPIVersion(version string) error {
 	return nil
 }
