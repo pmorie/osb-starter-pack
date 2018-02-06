@@ -17,21 +17,24 @@ Open Service Broker.
 
 You'll need:
 
-- A running [kubernetes](https://github.com/kubernetes/kubernetes) or [openshift](https://github.com/openshift/origin/) cluster
+- A running [kubernetes](https://github.com/kubernetes/kubernetes) (or [openshift](https://github.com/openshift/origin/)) cluster
 - The [service-catalog](https://github.com/kubernetes-incubator/service-catalog)
-  installed in that cluster
+  [installed](https://github.com/kubernetes-incubator/service-catalog/blob/master/docs/install.md)
+  in that cluster
 
-If you're using helm to deploy this project, you'll need to have helm installed
-in the cluster.
+If you're using [helm](https://helm.sh) to deploy this project, you'll need to
+have it [installed](https://docs.helm.sh/using_helm/#quickstart) in the cluster.
+Make sure [RBAC is correctly configured](https://docs.helm.sh/using_helm/#rbac)
+for helm.
 
 ## Getting started
 
 You can just clone this project and deploy it to start poking around right away:
 
 ```console
-# clone the repo and change into the repo
-$ git clone git://github.com/pmorie/osb-starter-pack
-$ cd osb-starter-pack
+# Make sure you're in the right directory of your GOPATH
+$ go get github.com/pmorie/osb-starter-pack
+$ cd $GOPATH/src/github.com/pmorie/osb-starter-pack
 
 # You can deploy two different ways: helm or openshift templates
 
