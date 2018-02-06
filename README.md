@@ -17,6 +17,7 @@ Open Service Broker.
 
 You'll need:
 
+- [`go`](https://golang.org/dl/)
 - A running [kubernetes](https://github.com/kubernetes/kubernetes) (or [openshift](https://github.com/openshift/origin/)) cluster
 - The [service-catalog](https://github.com/kubernetes-incubator/service-catalog)
   [installed](https://github.com/kubernetes-incubator/service-catalog/blob/master/docs/install.md)
@@ -29,11 +30,16 @@ for helm.
 
 ## Getting started
 
-You can just clone this project and deploy it to start poking around right away:
+You can `go get` this repo or `git clone` it to start poking around right away.
+
+The project comes ready with a minimal example service that you can easily deploy:
 
 ```console
-# Make sure you're in the right directory of your GOPATH
-$ go get github.com/pmorie/osb-starter-pack
+$ go get github.com/pmorie/osb-starter-pack/cmd/servicebroker
+# OR clone the repo
+$ cd $GOPATH/src && mkdir -p github.com/pmorie && cd github.com/pmorie && git clone git://github.com/pmorie/osb-starter-pack
+
+# change into the project directory
 $ cd $GOPATH/src/github.com/pmorie/osb-starter-pack
 
 # You can deploy two different ways: helm or openshift templates
