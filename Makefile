@@ -35,10 +35,13 @@ deploy-openshift: image
 	oc new-project osb-starter-pack
 	oc process -f openshift/starter-pack.yaml | oc create -f -
 
-provision:
+create-ns:
+	kubectl create ns test-ns
+
+provision: create-ns
 	kubectl apply -f manifests/service-instance.yaml 
 
 bind:
 	kubectl apply -f manifests/service-binding.yaml	
 
-.PHONY: build test linux image clean push deploy-help deploy-openshift provision bind
+.PHONY: build test linux image clean push deploy-help deploy-openshift create-ns provision bind
