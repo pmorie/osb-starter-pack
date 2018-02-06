@@ -1,3 +1,8 @@
+# If the USE_SUDO_FOR_DOCKER env var is set, prefix docker commands with 'sudo'
+ifdef USE_SUDO_FOR_DOCKER
+	SUDO_CMD = sudo
+endif
+
 build:
 	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
 
@@ -10,13 +15,13 @@ linux:
 
 image: linux
 	cp servicebroker image/
-	sudo docker build image/ -t quay.io/osb-starter-pack/servicebroker
+	$(SUDO_CMD) docker build image/ -t quay.io/osb-starter-pack/servicebroker
 
 clean:
 	rm -f servicebroker
 
 push: image
-	docker push quay.io/osb-starter-pack/servicebroker:latest
+	$(SUDO_CMD) docker push quay.io/osb-starter-pack/servicebroker:latest
 
 deploy-helm: image
 	helm install charts/servicebroker \
