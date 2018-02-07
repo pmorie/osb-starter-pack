@@ -34,7 +34,7 @@ deploy-helm: image
 
 deploy-openshift: image
 	oc new-project osb-starter-pack
-	oc process -f openshift/starter-pack.yaml | oc create -f -
+	oc process -f openshift/starter-pack.yaml -p IMAGE=$(IMAGE):$(TAG) | oc create -f -
 
 create-ns:
 	kubectl create ns test-ns

@@ -32,7 +32,8 @@ for helm.
 
 You can `go get` this repo or `git clone` it to start poking around right away.
 
-The project comes ready with a minimal example service that you can easily deploy:
+The project comes ready with a minimal example service that you can easily
+deploy and begin iterating on:
 
 ```console
 $ go get github.com/pmorie/osb-starter-pack/cmd/servicebroker
