@@ -1,8 +1,8 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceBinding
 metadata:
-  name: skeleton-service-binding
+  name: example-starter-pack-service-binding
   namespace: test-ns
 spec:
   instanceRef:
-    name: skeleton-service-instance
+    name: example-starter-pack-service
