@@ -5,6 +5,7 @@ endif
 
 IMAGE ?= quay.io/osb-starter-pack/servicebroker
 TAG ?= $(shell git describe --tags --always)
+PULL ?= IfNotPresent
 
 build:
 	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
@@ -29,7 +30,7 @@ push: image
 deploy-helm: image
 	helm install charts/servicebroker \
 	--name broker-skeleton --namespace broker-skeleton \
-	--set imagePullPolicy=Never
+	--set imagePullPolicy="$(PULL)"
 
 deploy-openshift: image
 	oc new-project osb-starter-pack
