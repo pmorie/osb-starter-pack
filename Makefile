@@ -30,7 +30,7 @@ push: image
 deploy-helm: image
 	helm install charts/servicebroker \
 	--name broker-skeleton --namespace broker-skeleton \
-	--set imagePullPolicy="$(PULL)"
+	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image
 	oc new-project osb-starter-pack
