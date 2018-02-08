@@ -18,7 +18,7 @@ linux:
 	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
 
 image: linux
-	cp servicebroker-linux image/
+	cp servicebroker-linux image/servicebroker
 	$(SUDO_CMD) docker build image/ -t "$(IMAGE):$(TAG)"
 
 clean:
