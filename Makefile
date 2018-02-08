@@ -15,10 +15,10 @@ test:
 
 linux:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
 
 image: linux
-	cp servicebroker image/
+	cp servicebroker-linux image/
 	$(SUDO_CMD) docker build image/ -t "$(IMAGE):$(TAG)"
 
 clean:
