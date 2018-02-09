@@ -48,7 +48,7 @@ objects:
         containers:
         - name: service-osb-starter-pack
           image: ${IMAGE}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           command:
           - /opt/servicebroker/servicebroker
           args:
