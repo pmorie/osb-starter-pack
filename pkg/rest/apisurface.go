@@ -29,6 +29,7 @@ const (
 	bindingIDVarKey  = "binding_id"
 	serviceIDVarKey  = "service_id"
 	planIDVarKey     = "plan_id"
+	operationKey     = "operation"
 )
 
 // NewAPISurface returns a new, ready-to-go APISurface.
@@ -174,7 +175,47 @@ func (s *APISurface) LastOperationHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// TODO
+	request, err := unpackLastOperationRequest(r)
+	if err != nil {
+		// TODO: This should return a 400 in this case as it is either
+		// malformed or missing mandatory data, as per the OSB spec.
+		writeError(w, err)
+		return
+	}
+
+	glog.Infof("Received LastOperationRequest for instanceID %q", request.InstanceID)
+
+	response, err := s.BusinessLogic.LastOperation(request, w, r)
+	if err != nil {
+		// TODO: This should return a 400 in this case as it is either
+		// malformed or missing mandatory data, as per the OSB spec.
+		writeError(w, err)
+		return
+	}
+
+	writeResponse(w, http.StatusOK, response)
+}
+
+// unpackLastOperationRequest unpacks an osb request from the given HTTP request.
+func unpackLastOperationRequest(r *http.Request) (*osb.LastOperationRequest, error) {
+	osbRequest := &osb.LastOperationRequest{}
+
+	vars := mux.Vars(r)
+	osbRequest.InstanceID = vars[instanceIDVarKey]
+	serviceID := vars[serviceIDVarKey]
+	if serviceID != "" {
+		osbRequest.ServiceID = &serviceID
+	}
+	planID := vars[planIDVarKey]
+	if planID != "" {
+		osbRequest.PlanID = &planID
+	}
+	operation := vars[operationKey]
+	if operation != "" {
+		typedOperation := osb.OperationKey(operation)
+		osbRequest.OperationKey = &typedOperation
+	}
+	return osbRequest, nil
 }
 
 // BindHandler is the mux handler that dispatches bind requests to the broker's
