@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/pmorie/go-open-service-broker-client/v2"
+	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
 // TODO: export in go-open-service-broker-client
@@ -14,7 +14,7 @@ const (
 )
 
 func getBrokerAPIVersionFromRequest(r *http.Request) string {
-	return r.Header.Get(v2.APIVersionHeader)
+	return r.Header.Get(osb.APIVersionHeader)
 }
 
 // writeResponse will serialize 'object' to the HTTP ResponseWriter
@@ -31,16 +31,35 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 	w.Write(data)
 }
 
-type e struct {
-	Error string
+// writeError accepts any error and writes it to the given ResponseWriter along
+// with a status code.
+//
+// If the error is an osb.HTTPStatusCodeError, the error's StatusCode field will
+// be used and the response body will contain the error's Description and
+// ErrorMessage fields.
+//
+// Otherwise, the given defaultStatusCode will be used, and the response body
+// will have the result of calling the error's Error method set in the
+// 'description' field.
+//
+// For more information about OSB errors, see:
+//
+// https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#service-broker-errors
+func writeError(w http.ResponseWriter, err error, defaultStatusCode int) {
+	if httpErr, ok := osb.IsHTTPError(err); ok {
+		writeResponse(w, httpErr.StatusCode, err)
+		return
+	}
+
+	writeErrorResponse(w, defaultStatusCode, err)
 }
 
 func writeErrorResponse(w http.ResponseWriter, code int, err error) {
 	type e struct {
-		Error string
+		Description string `json:"description"`
 	}
 	writeResponse(w, code, &e{
-		Error: err.Error(),
+		Description: err.Error(),
 	})
 }
 
