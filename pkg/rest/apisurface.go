@@ -10,7 +10,6 @@ import (
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 
 	"github.com/pmorie/osb-starter-pack/pkg/broker"
-	"github.com/pmorie/osb-starter-pack/pkg/user"
 )
 
 // APISurface is a type that describes a OSB REST API surface. APISurface is
@@ -33,13 +32,7 @@ const (
 )
 
 // NewAPISurface returns a new, ready-to-go APISurface.
-func NewAPISurface(options user.Options) (*APISurface, error) {
-
-	businessLogic, err := user.NewBusinessLogic(options)
-	if err != nil {
-		return nil, err
-	}
-
+func NewAPISurface(businessLogic broker.BusinessLogic) (*APISurface, error) {
 	api := &APISurface{
 		BusinessLogic: businessLogic,
 	}

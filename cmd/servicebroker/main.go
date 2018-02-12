@@ -60,7 +60,12 @@ func runWithContext(ctx context.Context) error {
 
 	addr := ":" + strconv.Itoa(options.Port)
 
-	api, err := rest.NewAPISurface(options.Options)
+	businessLogic, err := user.NewBusinessLogic(options.Options)
+	if err != nil {
+		return err
+	}
+
+	api, err := rest.NewAPISurface(businessLogic)
 	if err != nil {
 		return err
 	}
