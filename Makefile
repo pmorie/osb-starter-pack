@@ -28,8 +28,8 @@ push: image
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
 
 deploy-helm: image
-	helm install charts/servicebroker \
-	--name broker-skeleton --namespace broker-skeleton \
+	helm upgrade --install broker-skeleton --namespace broker-skeleton \
+	charts/servicebroker \
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image
