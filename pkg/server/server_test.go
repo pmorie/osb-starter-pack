@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -12,16 +13,19 @@ import (
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
+// TODO: is this more of an integration test?
+
 // BusinessLogic provides an implementation of the broker.BusinessLogic
 // interface.
 type FakeBusinessLogic struct {
-	getCatalog    func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
-	provision     func(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error)
-	deprovision   func(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error)
-	lastOperation func(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error)
-	bind          func(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error)
-	unbind        func(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
-	update        func(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
+	validateAPIVersion func(string) error
+	getCatalog         func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
+	provision          func(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error)
+	deprovision        func(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error)
+	lastOperation      func(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error)
+	bind               func(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error)
+	unbind             func(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
+	update             func(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
 }
 
 var _ broker.BusinessLogic = &FakeBusinessLogic{}
@@ -51,47 +55,97 @@ func (b *FakeBusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWr
 }
 
 func (b *FakeBusinessLogic) ValidateBrokerAPIVersion(version string) error {
-	return nil
+	return b.validateAPIVersion(version)
 }
 
 func (b *FakeBusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
 	return b.update(request, w, r)
 }
 
+func defaultValidateFunc(_ string) error {
+	return nil
+}
+
+func strPtr(s string) *string {
+	return &s
+}
+
 func TestGetCatalog(t *testing.T) {
-	expectedResponse := &osb.CatalogResponse{Services: []osb.Service{
+	okResponse := &osb.CatalogResponse{Services: []osb.Service{
 		{
 			Name: "foo",
 		},
 	}}
 
-	api := &rest.APISurface{
-		BusinessLogic: &FakeBusinessLogic{
-			getCatalog: func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
-				return expectedResponse, nil
+	cases := []struct {
+		name         string
+		validateFunc func(string) error
+		catalogFunc  func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
+		response     *osb.CatalogResponse
+		err          error
+	}{
+		{
+			name: "OK",
+			catalogFunc: func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
+				return okResponse, nil
+			},
+			response: okResponse,
+		},
+		{
+			name: "version validation error",
+			validateFunc: func(string) error {
+				return errors.New("oops")
+			},
+			err: osb.HTTPStatusCodeError{
+				StatusCode:  http.StatusPreconditionFailed,
+				Description: strPtr("oops"),
 			},
 		},
 	}
 
-	s := New(api)
+	for i := range cases {
+		tc := cases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			validateFunc := defaultValidateFunc
+			if tc.validateFunc != nil {
+				validateFunc = tc.validateFunc
+			}
 
-	fs := httptest.NewServer(s.Router)
-	defer fs.Close()
+			api := &rest.APISurface{
+				BusinessLogic: &FakeBusinessLogic{
+					validateAPIVersion: validateFunc,
+					getCatalog:         tc.catalogFunc,
+				},
+			}
 
-	config := osb.DefaultClientConfiguration()
-	config.URL = fs.URL
+			s := New(api)
+			fs := httptest.NewServer(s.Router)
+			defer fs.Close()
 
-	client, err := osb.NewClient(config)
-	if err != nil {
-		t.Error(err)
-	}
+			config := osb.DefaultClientConfiguration()
+			config.URL = fs.URL
 
-	actualResponse, err := client.GetCatalog()
-	if err != nil {
-		t.Error(err)
-	}
+			client, err := osb.NewClient(config)
+			if err != nil {
+				t.Error(err)
+			}
 
-	if !reflect.DeepEqual(actualResponse, expectedResponse) {
-		t.Errorf("Unexpected response\n\nExpected: %#+v\n\nGot: %#+v", expectedResponse, actualResponse)
+			actualResponse, err := client.GetCatalog()
+			if err != nil {
+				if tc.err != nil {
+					if e, a := tc.err, err; !reflect.DeepEqual(e, a) {
+						t.Errorf("Unexpected error; expected %v, got %v", e, a)
+						return
+					}
+					return
+				}
+				t.Error(err)
+				return
+			}
+
+			if e, a := tc.response, actualResponse; !reflect.DeepEqual(e, a) {
+				t.Errorf("Unexpected response\n\nExpected: %#+v\n\nGot: %#+v", e, a)
+			}
+		})
 	}
 }
