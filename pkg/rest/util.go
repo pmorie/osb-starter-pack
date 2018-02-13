@@ -36,7 +36,7 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 //
 // If the error is an osb.HTTPStatusCodeError, the error's StatusCode field will
 // be used and the response body will contain the error's Description and
-// ErrorMessage fields.
+// ErrorMessage fields (if set).
 //
 // Otherwise, the given defaultStatusCode will be used, and the response body
 // will have the result of calling the error's Error method set in the
@@ -47,13 +47,38 @@ func writeResponse(w http.ResponseWriter, code int, object interface{}) {
 // https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#service-broker-errors
 func writeError(w http.ResponseWriter, err error, defaultStatusCode int) {
 	if httpErr, ok := osb.IsHTTPError(err); ok {
-		writeResponse(w, httpErr.StatusCode, err)
+		writeOSBStatusCodeErrorResponse(w, httpErr)
 		return
 	}
 
 	writeErrorResponse(w, defaultStatusCode, err)
 }
 
+// writeOSBStatusCodeErrorResponse writes the given HTTPStatusCodeError to the
+// given ResponseWriter. The HTTP response's status code is the error's
+// StatusCode field and the body contains the ErrorMessage and Description
+// fields, if set.
+func writeOSBStatusCodeErrorResponse(w http.ResponseWriter, err *osb.HTTPStatusCodeError) {
+	type e struct {
+		ErrorMessage *string `json:"error,omitempty"`
+		Description  *string `json:"description,omitempty"`
+	}
+
+	body := &e{}
+	if err.Description != nil {
+		body.Description = err.Description
+	}
+
+	if err.ErrorMessage != nil {
+		body.ErrorMessage = err.ErrorMessage
+	}
+
+	writeResponse(w, err.StatusCode, body)
+}
+
+// writeErrorResponse writes the given status code and error to the given
+// ResponseWriter. The response body will be a json object with the field
+// 'description' set from calling Error() on the passed-in error.
 func writeErrorResponse(w http.ResponseWriter, code int, err error) {
 	type e struct {
 		Description string `json:"description"`
