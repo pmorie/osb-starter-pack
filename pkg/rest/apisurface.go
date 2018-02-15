@@ -69,7 +69,7 @@ func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
 
 	request, err := unpackProvisionRequest(r)
 	if err != nil {
-		writeError(w, err, http.StatusInternalServerError)
+		writeError(w, err, http.StatusBadRequest)
 		return
 	}
 
