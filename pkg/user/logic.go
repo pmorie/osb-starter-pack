@@ -18,6 +18,7 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	// line, you would unpack it from the Options and set it on the
 	// BusinessLogic here.
 	return &BusinessLogic{
+		async:     o.Async,
 		instances: make(map[string]*exampleInstance, 10),
 	}, nil
 }
@@ -25,8 +26,11 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 // BusinessLogic provides an implementation of the broker.BusinessLogic
 // interface.
 type BusinessLogic struct {
-	// Add fields here! These fields are provided purely as an example
+	// Indiciates if the broker should handle the requests asynchronously.
+	async bool
+	// Synchronize go routines.
 	sync.RWMutex
+	// Add fields here! These fields are provided purely as an example
 	instances map[string]*exampleInstance
 }
 
@@ -89,10 +93,16 @@ func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWrite
 	b.Lock()
 	defer b.Unlock()
 
+	response := osb.ProvisionResponse{}
+
 	exampleInstance := &exampleInstance{ID: pr.InstanceID, Params: pr.Parameters}
 	b.instances[pr.InstanceID] = exampleInstance
 
-	return &osb.ProvisionResponse{}, nil
+	if pr.AcceptsIncomplete {
+		response.Async = b.async
+	}
+
+	return &response, nil
 }
 
 func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
@@ -102,9 +112,15 @@ func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.Resp
 	b.Lock()
 	defer b.Unlock()
 
+	response := osb.DeprovisionResponse{}
+
 	delete(b.instances, request.InstanceID)
 
-	return &osb.DeprovisionResponse{}, nil
+	if request.AcceptsIncomplete {
+		response.Async = b.async
+	}
+
+	return &response, nil
 }
 
 func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
@@ -127,7 +143,14 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r 
 		}
 	}
 
-	return &osb.BindResponse{Credentials: instance.Params}, nil
+	response := osb.BindResponse{
+		Credentials: instance.Params,
+	}
+	if request.AcceptsIncomplete {
+		response.Async = b.async
+	}
+
+	return &response, nil
 }
 
 func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
@@ -137,7 +160,12 @@ func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter
 
 func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
 	// Your logic for updating a service goes here.
-	return &osb.UpdateInstanceResponse{}, nil
+	response := osb.UpdateInstanceResponse{}
+	if request.AcceptsIncomplete {
+		response.Async = b.async
+	}
+
+	return &response, nil
 }
 
 func (b *BusinessLogic) ValidateBrokerAPIVersion(version string) error {
