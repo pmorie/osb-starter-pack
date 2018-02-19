@@ -31,7 +31,7 @@ func TestDeprovision(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns errors.New",
+			name: "deprovision returns errors.New",
 			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
 				return nil, errors.New("oops")
 			},
@@ -41,7 +41,7 @@ func TestDeprovision(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns osb.HTTPStatusCodeError",
+			name: "deprovision returns osb.HTTPStatusCodeError",
 			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
@@ -54,14 +54,14 @@ func TestDeprovision(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns sync",
+			name: "deprovision returns sync",
 			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
 				return &osb.DeprovisionResponse{}, nil
 			},
 			response: &osb.DeprovisionResponse{},
 		},
 		{
-			name: "provision returns async",
+			name: "deprovision returns async",
 			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
 				return &osb.DeprovisionResponse{
 					Async: true,

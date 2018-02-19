@@ -31,7 +31,7 @@ func TestUnbind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns errors.New",
+			name: "unbind returns errors.New",
 			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
 				return nil, errors.New("oops")
 			},
@@ -41,7 +41,7 @@ func TestUnbind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns osb.HTTPStatusCodeError",
+			name: "unbind returns osb.HTTPStatusCodeError",
 			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
@@ -54,7 +54,7 @@ func TestUnbind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns sync",
+			name: "OK",
 			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
 				return &osb.UnbindResponse{}, nil
 			},

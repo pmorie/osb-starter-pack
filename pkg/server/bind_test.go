@@ -31,7 +31,7 @@ func TestBind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns errors.New",
+			name: "bind returns errors.New",
 			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
 				return nil, errors.New("oops")
 			},
@@ -41,7 +41,7 @@ func TestBind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns osb.HTTPStatusCodeError",
+			name: "bind returns osb.HTTPStatusCodeError",
 			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
@@ -54,7 +54,7 @@ func TestBind(t *testing.T) {
 			},
 		},
 		{
-			name: "provision returns sync",
+			name: "OK",
 			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
 				return &osb.BindResponse{}, nil
 			},
