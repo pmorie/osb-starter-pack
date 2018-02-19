@@ -36,7 +36,3 @@
 [[constraint]]
   branch = "master"
   name = "github.com/pmorie/go-open-service-broker-client"
-
-[[constraint]]
-  branch = "v2"
-  name = "gopkg.in/yaml.v2"
