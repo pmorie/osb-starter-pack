@@ -34,5 +34,6 @@
   version = "1.6.1"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/pmorie/go-open-service-broker-client"
+  version = "0.0.1"
+
