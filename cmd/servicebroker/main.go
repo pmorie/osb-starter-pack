@@ -11,7 +11,9 @@ import (
 	"syscall"
 
 	"github.com/golang/glog"
+	prom "github.com/prometheus/client_golang/prometheus"
 
+	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 	"github.com/pmorie/osb-starter-pack/pkg/server"
 	"github.com/pmorie/osb-starter-pack/pkg/user"
@@ -65,12 +67,17 @@ func runWithContext(ctx context.Context) error {
 		return err
 	}
 
-	api, err := rest.NewAPISurface(businessLogic)
+	// Prom. metrics
+	reg := prom.NewRegistry()
+	osbMetrics := metrics.New()
+	reg.MustRegister(osbMetrics)
+
+	api, err := rest.NewAPISurface(businessLogic, osbMetrics)
 	if err != nil {
 		return err
 	}
 
-	s := server.New(api)
+	s := server.New(api, reg)
 
 	glog.Infof("Starting broker!")
 

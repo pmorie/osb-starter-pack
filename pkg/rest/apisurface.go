@@ -10,6 +10,7 @@ import (
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 
 	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 )
 
 // APISurface is a type that describes a OSB REST API surface. APISurface is
@@ -21,6 +22,7 @@ type APISurface struct {
 	// BusinessLogic contains the business logic that provides the
 	// implementation for the different OSB API operations.
 	BusinessLogic broker.BusinessLogic
+	Metrics       *metrics.OSBMetricsCollector
 }
 
 const (
@@ -32,9 +34,10 @@ const (
 )
 
 // NewAPISurface returns a new, ready-to-go APISurface.
-func NewAPISurface(businessLogic broker.BusinessLogic) (*APISurface, error) {
+func NewAPISurface(businessLogic broker.BusinessLogic, m *metrics.OSBMetricsCollector) (*APISurface, error) {
 	api := &APISurface{
 		BusinessLogic: businessLogic,
+		Metrics:       m,
 	}
 
 	return api, nil
@@ -43,6 +46,8 @@ func NewAPISurface(businessLogic broker.BusinessLogic) (*APISurface, error) {
 // GetCatalogHandler is the mux handler that dispatches requests to get the
 // broker's catalog to the broker's BusinessLogic.
 func (s *APISurface) GetCatalogHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("get_catalog").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -61,6 +66,8 @@ func (s *APISurface) GetCatalogHandler(w http.ResponseWriter, r *http.Request) {
 // ProvisionHandler is the mux handler that dispatches ProvisionRequests to the
 // broker's BusinessLogic.
 func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("provision").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -114,6 +121,8 @@ func unpackProvisionRequest(r *http.Request) (*osb.ProvisionRequest, error) {
 // DeprovisionHandler is the mux handler that dispatches deprovision requests to
 // the broker's BusinessLogic.
 func (s *APISurface) DeprovisionHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("deprovision").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -162,6 +171,8 @@ func unpackDeprovisionRequest(r *http.Request) (*osb.DeprovisionRequest, error) 
 // LastOperationHandler is the mux handler that dispatches last-operation
 // requests to the broker's BusinessLogic.
 func (s *APISurface) LastOperationHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("last_operation").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -214,6 +225,8 @@ func unpackLastOperationRequest(r *http.Request) (*osb.LastOperationRequest, err
 // BindHandler is the mux handler that dispatches bind requests to the broker's
 // BusinessLogic.
 func (s *APISurface) BindHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("bind").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -254,6 +267,8 @@ func unpackBindRequest(r *http.Request) (*osb.BindRequest, error) {
 // UnbindHandler is the mux handler that dispatches unbind requests to the
 // broker's BusinessLogic.
 func (s *APISurface) UnbindHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("unbind").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
@@ -291,6 +306,8 @@ func unpackUnbindRequest(r *http.Request) (*osb.UnbindRequest, error) {
 // UpdateHandler is the mux handler that dispatches Update requests to the
 // broker's BusinessLogic.
 func (s *APISurface) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	s.Metrics.Actions.WithLabelValues("update").Inc()
+
 	version := getBrokerAPIVersionFromRequest(r)
 	if err := s.BusinessLogic.ValidateBrokerAPIVersion(version); err != nil {
 		writeError(w, err, http.StatusPreconditionFailed)
