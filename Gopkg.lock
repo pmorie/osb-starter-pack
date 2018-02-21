@@ -22,8 +22,8 @@
 [[projects]]
   name = "github.com/pmorie/go-open-service-broker-client"
   packages = ["v2"]
-  revision = "4c53612134f3e9dc633016a9dfe556fe915119d7"
-  version = "0.0.1"
+  revision = "3814f81c2fc5ac382cdcb18803cecbd180347dbc"
+  version = "0.0.2"
 
 [[projects]]
   branch = "v2"
@@ -34,6 +34,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8f57be58f4909dec6939463d134b4ac40655e4b4aefe644d7e42d84d69da74af"
+  inputs-digest = "b7d7ba6a4d6b2935d43ad4efc0f8b93989dce20caf7517e2b3eb819d605a0efd"
   solver-name = "gps-cdcl"
   solver-version = 1

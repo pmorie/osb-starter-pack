@@ -12,14 +12,27 @@ import (
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
-func TestUnbind(t *testing.T) {
+func TestGetCatalog(t *testing.T) {
+	okResponse := &osb.CatalogResponse{Services: []osb.Service{
+		{
+			Name: "foo",
+		},
+	}}
+
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		unbindFunc   func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
-		response     *osb.UnbindResponse
+		catalogFunc  func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
+		response     *osb.CatalogResponse
 		err          error
 	}{
+		{
+			name: "OK",
+			catalogFunc: func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
+				return okResponse, nil
+			},
+			response: okResponse,
+		},
 		{
 			name: "version validation error",
 			validateFunc: func(string) error {
@@ -29,36 +42,6 @@ func TestUnbind(t *testing.T) {
 				StatusCode:  http.StatusPreconditionFailed,
 				Description: strPtr("oops"),
 			},
-		},
-		{
-			name: "unbind returns errors.New",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
-				return nil, errors.New("oops")
-			},
-			err: osb.HTTPStatusCodeError{
-				StatusCode:  http.StatusInternalServerError,
-				Description: strPtr("oops"),
-			},
-		},
-		{
-			name: "unbind returns osb.HTTPStatusCodeError",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
-				return nil, osb.HTTPStatusCodeError{
-					StatusCode:  http.StatusBadGateway,
-					Description: strPtr("custom error"),
-				}
-			},
-			err: osb.HTTPStatusCodeError{
-				StatusCode:  http.StatusBadGateway,
-				Description: strPtr("custom error"),
-			},
-		},
-		{
-			name: "OK",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
-				return &osb.UnbindResponse{}, nil
-			},
-			response: &osb.UnbindResponse{},
 		},
 	}
 
@@ -73,7 +56,7 @@ func TestUnbind(t *testing.T) {
 			api := &rest.APISurface{
 				BusinessLogic: &FakeBusinessLogic{
 					validateAPIVersion: validateFunc,
-					unbind:             tc.unbindFunc,
+					getCatalog:         tc.catalogFunc,
 				},
 			}
 
@@ -89,12 +72,7 @@ func TestUnbind(t *testing.T) {
 				t.Error(err)
 			}
 
-			actualResponse, err := client.Unbind(&osb.UnbindRequest{
-				BindingID:  "12345",
-				InstanceID: "12345",
-				ServiceID:  "12345",
-				PlanID:     "12345",
-			})
+			actualResponse, err := client.GetCatalog()
 			if err != nil {
 				if tc.err != nil {
 					if e, a := tc.err, err; !reflect.DeepEqual(e, a) {

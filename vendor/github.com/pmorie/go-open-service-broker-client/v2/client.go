@@ -64,6 +64,7 @@ func NewClient(config *ClientConfiguration) (Client, error) {
 		URL:                 strings.TrimRight(config.URL, "/"),
 		APIVersion:          config.APIVersion,
 		EnableAlphaFeatures: config.EnableAlphaFeatures,
+		Verbose:             config.Verbose,
 		httpClient:          httpClient,
 	}
 	c.doRequestFunc = c.doRequest

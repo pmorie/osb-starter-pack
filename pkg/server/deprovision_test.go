@@ -92,7 +92,7 @@ func TestDeprovision(t *testing.T) {
 			fs := httptest.NewServer(s.Router)
 			defer fs.Close()
 
-			config := osb.DefaultClientConfiguration()
+			config := defaultClientConfiguration()
 			config.URL = fs.URL
 
 			client, err := osb.NewClient(config)
