@@ -7,9 +7,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
+	prom "github.com/prometheus/client_golang/prometheus"
 )
 
 func TestProvision(t *testing.T) {
@@ -87,14 +89,20 @@ func TestProvision(t *testing.T) {
 				validateFunc = tc.validateFunc
 			}
 
+			// Prom. metrics
+			reg := prom.NewRegistry()
+			osbMetrics := metrics.New()
+			reg.MustRegister(osbMetrics)
+
 			api := &rest.APISurface{
 				BusinessLogic: &FakeBusinessLogic{
 					validateAPIVersion: validateFunc,
 					provision:          tc.provisionFunc,
 				},
+				Metrics: osbMetrics,
 			}
 
-			s := New(api)
+			s := New(api, reg)
 			fs := httptest.NewServer(s.Router)
 			defer fs.Close()
 
