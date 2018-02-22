@@ -46,7 +46,12 @@ func (s *APISurface) GetCatalogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.BusinessLogic.GetCatalog(w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.GetCatalog(c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return
@@ -74,7 +79,12 @@ func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
 
 	glog.Infof("Received ProvisionRequest for instanceID %q", request.InstanceID)
 
-	response, err := s.BusinessLogic.Provision(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.Provision(request, c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return
@@ -129,7 +139,12 @@ func (s *APISurface) DeprovisionHandler(w http.ResponseWriter, r *http.Request) 
 
 	glog.Infof("Received DeprovisionRequest for instanceID %q", request.InstanceID)
 
-	response, err := s.BusinessLogic.Deprovision(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.Deprovision(request, c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return
@@ -181,7 +196,12 @@ func (s *APISurface) LastOperationHandler(w http.ResponseWriter, r *http.Request
 
 	glog.Infof("Received LastOperationRequest for instanceID %q", request.InstanceID)
 
-	response, err := s.BusinessLogic.LastOperation(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.LastOperation(request, c)
 	if err != nil {
 		// TODO: This should return a 400 in this case as it is either
 		// malformed or missing mandatory data, as per the OSB spec.
@@ -233,7 +253,12 @@ func (s *APISurface) BindHandler(w http.ResponseWriter, r *http.Request) {
 
 	glog.Infof("Received BindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
 
-	response, err := s.BusinessLogic.Bind(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.Bind(request, c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return
@@ -275,7 +300,12 @@ func (s *APISurface) UnbindHandler(w http.ResponseWriter, r *http.Request) {
 
 	glog.Infof("Received UnbindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
 
-	response, err := s.BusinessLogic.Unbind(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.Unbind(request, c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return
@@ -314,7 +344,12 @@ func (s *APISurface) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	glog.Infof("Received Update Request for instanceID %q", request.InstanceID)
 
-	response, err := s.BusinessLogic.Update(request, w, r)
+	c := &broker.RequestContext{
+		Writer:  w,
+		Request: r,
+	}
+
+	response, err := s.BusinessLogic.Update(request, c)
 	if err != nil {
 		writeError(w, err, http.StatusInternalServerError)
 		return

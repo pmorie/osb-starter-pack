@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"sync"
 
-	"gopkg.in/yaml.v2"
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
-	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"gopkg.in/yaml.v2"
 )
 
 // NewBusinessLogic is a hook that is called with the Options the program is run
@@ -36,7 +36,7 @@ type BusinessLogic struct {
 
 var _ broker.BusinessLogic = &BusinessLogic{}
 
-func (b *BusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
+func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogResponse, error) {
 	// Your catalog business logic goes here
 	response := &osb.CatalogResponse{}
 
@@ -86,7 +86,7 @@ services:
 	return response, nil
 }
 
-func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 	// Your provision business logic goes here
 
 	// example implementation:
@@ -95,17 +95,17 @@ func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWrite
 
 	response := osb.ProvisionResponse{}
 
-	exampleInstance := &exampleInstance{ID: pr.InstanceID, Params: pr.Parameters}
-	b.instances[pr.InstanceID] = exampleInstance
+	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
+	b.instances[request.InstanceID] = exampleInstance
 
-	if pr.AcceptsIncomplete {
+	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
 
 	return &response, nil
 }
 
-func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 	// Your deprovision business logic goes here
 
 	// example implementation:
@@ -123,13 +123,13 @@ func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.Resp
 	return &response, nil
 }
 
-func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
+func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
 	// Your last-operation business logic goes here
 
 	return nil, nil
 }
 
-func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
+func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
 	// Your bind business logic goes here
 
 	// example implementation:
@@ -153,12 +153,12 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r 
 	return &response, nil
 }
 
-func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
+func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
 	// Your unbind business logic goes here
 	return &osb.UnbindResponse{}, nil
 }
 
-func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 	// Your logic for updating a service goes here.
 	response := osb.UpdateInstanceResponse{}
 	if request.AcceptsIncomplete {
