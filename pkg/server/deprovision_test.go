@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestDeprovision(t *testing.T) {
 	cases := []struct {
 		name            string
 		validateFunc    func(string) error
-		deprovisionFunc func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error)
+		deprovisionFunc func(req *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error)
 		response        *osb.DeprovisionResponse
 		err             error
 	}{
@@ -34,7 +35,7 @@ func TestDeprovision(t *testing.T) {
 		},
 		{
 			name: "deprovision returns errors.New",
-			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+			deprovisionFunc: func(req *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestDeprovision(t *testing.T) {
 		},
 		{
 			name: "deprovision returns osb.HTTPStatusCodeError",
-			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+			deprovisionFunc: func(req *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,14 +58,14 @@ func TestDeprovision(t *testing.T) {
 		},
 		{
 			name: "deprovision returns sync",
-			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+			deprovisionFunc: func(req *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 				return &osb.DeprovisionResponse{}, nil
 			},
 			response: &osb.DeprovisionResponse{},
 		},
 		{
 			name: "deprovision returns async",
-			deprovisionFunc: func(req *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+			deprovisionFunc: func(req *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 				return &osb.DeprovisionResponse{
 					Async: true,
 				}, nil

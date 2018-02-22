@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestProvision(t *testing.T) {
 	cases := []struct {
 		name          string
 		validateFunc  func(string) error
-		provisionFunc func(req *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error)
+		provisionFunc func(req *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error)
 		response      *osb.ProvisionResponse
 		err           error
 	}{
@@ -34,7 +35,7 @@ func TestProvision(t *testing.T) {
 		},
 		{
 			name: "provision returns errors.New",
-			provisionFunc: func(req *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+			provisionFunc: func(req *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestProvision(t *testing.T) {
 		},
 		{
 			name: "provision returns osb.HTTPStatusCodeError",
-			provisionFunc: func(req *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+			provisionFunc: func(req *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,7 +58,7 @@ func TestProvision(t *testing.T) {
 		},
 		{
 			name: "provision returns sync",
-			provisionFunc: func(req *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+			provisionFunc: func(req *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 				return &osb.ProvisionResponse{
 					DashboardURL: strPtr("my.service.to/12345"),
 				}, nil
@@ -68,7 +69,7 @@ func TestProvision(t *testing.T) {
 		},
 		{
 			name: "provision returns async",
-			provisionFunc: func(req *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+			provisionFunc: func(req *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 				return &osb.ProvisionResponse{
 					Async:        true,
 					DashboardURL: strPtr("my.service.to/12345"),

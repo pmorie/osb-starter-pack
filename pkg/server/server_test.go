@@ -1,8 +1,6 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/pmorie/osb-starter-pack/pkg/broker"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
@@ -14,47 +12,47 @@ import (
 // interface.
 type FakeBusinessLogic struct {
 	validateAPIVersion func(string) error
-	getCatalog         func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
-	provision          func(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error)
-	deprovision        func(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error)
-	lastOperation      func(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error)
-	bind               func(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error)
-	unbind             func(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
-	update             func(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
+	getCatalog         func(c *broker.RequestContext) (*osb.CatalogResponse, error)
+	provision          func(pr *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error)
+	deprovision        func(request *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error)
+	lastOperation      func(request *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error)
+	bind               func(request *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error)
+	unbind             func(request *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error)
+	update             func(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error)
 }
 
 var _ broker.BusinessLogic = &FakeBusinessLogic{}
 
-func (b *FakeBusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
-	return b.getCatalog(w, r)
+func (b *FakeBusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogResponse, error) {
+	return b.getCatalog(c)
 }
 
-func (b *FakeBusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
-	return b.provision(pr, w, r)
+func (b *FakeBusinessLogic) Provision(pr *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
+	return b.provision(pr, c)
 }
 
-func (b *FakeBusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
-	return b.deprovision(request, w, r)
+func (b *FakeBusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
+	return b.deprovision(request, c)
 }
 
-func (b *FakeBusinessLogic) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
-	return b.lastOperation(request, w, r)
+func (b *FakeBusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
+	return b.lastOperation(request, c)
 }
 
-func (b *FakeBusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
-	return b.bind(request, w, r)
+func (b *FakeBusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
+	return b.bind(request, c)
 }
 
-func (b *FakeBusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
-	return b.unbind(request, w, r)
+func (b *FakeBusinessLogic) Unbind(request *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
+	return b.unbind(request, c)
 }
 
 func (b *FakeBusinessLogic) ValidateBrokerAPIVersion(version string) error {
 	return b.validateAPIVersion(version)
 }
 
-func (b *FakeBusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
-	return b.update(request, w, r)
+func (b *FakeBusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
+	return b.update(request, c)
 }
 
 func defaultValidateFunc(_ string) error {
