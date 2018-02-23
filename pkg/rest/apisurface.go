@@ -25,14 +25,6 @@ type APISurface struct {
 	Metrics       *metrics.OSBMetricsCollector
 }
 
-const (
-	instanceIDVarKey = "instance_id"
-	bindingIDVarKey  = "binding_id"
-	serviceIDVarKey  = "service_id"
-	planIDVarKey     = "plan_id"
-	operationKey     = "operation"
-)
-
 // NewAPISurface returns a new, ready-to-go APISurface.
 func NewAPISurface(businessLogic broker.BusinessLogic, m *metrics.OSBMetricsCollector) (*APISurface, error) {
 	api := &APISurface{
@@ -108,9 +100,9 @@ func unpackProvisionRequest(r *http.Request) (*osb.ProvisionRequest, error) {
 	}
 
 	vars := mux.Vars(r)
-	osbRequest.InstanceID = vars[instanceIDVarKey]
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
 
-	asyncQueryParamVal := r.URL.Query().Get(asyncQueryParamKey)
+	asyncQueryParamVal := r.URL.Query().Get(osb.AcceptsIncomplete)
 	if strings.ToLower(asyncQueryParamVal) == "true" {
 		osbRequest.AcceptsIncomplete = true
 	}
@@ -156,11 +148,11 @@ func unpackDeprovisionRequest(r *http.Request) (*osb.DeprovisionRequest, error) 
 	osbRequest := &osb.DeprovisionRequest{}
 
 	vars := mux.Vars(r)
-	osbRequest.InstanceID = vars[instanceIDVarKey]
-	osbRequest.ServiceID = vars[serviceIDVarKey]
-	osbRequest.PlanID = vars[planIDVarKey]
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
+	osbRequest.ServiceID = vars[osb.VarKeyServiceID]
+	osbRequest.PlanID = vars[osb.VarKeyPlanID]
 
-	asyncQueryParamVal := r.URL.Query().Get(asyncQueryParamKey)
+	asyncQueryParamVal := r.URL.Query().Get(osb.AcceptsIncomplete)
 	if strings.ToLower(asyncQueryParamVal) == "true" {
 		osbRequest.AcceptsIncomplete = true
 	}
@@ -205,16 +197,16 @@ func unpackLastOperationRequest(r *http.Request) (*osb.LastOperationRequest, err
 	osbRequest := &osb.LastOperationRequest{}
 
 	vars := mux.Vars(r)
-	osbRequest.InstanceID = vars[instanceIDVarKey]
-	serviceID := vars[serviceIDVarKey]
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
+	serviceID := vars[osb.VarKeyServiceID]
 	if serviceID != "" {
 		osbRequest.ServiceID = &serviceID
 	}
-	planID := vars[planIDVarKey]
+	planID := vars[osb.VarKeyPlanID]
 	if planID != "" {
 		osbRequest.PlanID = &planID
 	}
-	operation := vars[operationKey]
+	operation := vars[osb.VarKeyOperation]
 	if operation != "" {
 		typedOperation := osb.OperationKey(operation)
 		osbRequest.OperationKey = &typedOperation
@@ -258,8 +250,8 @@ func unpackBindRequest(r *http.Request) (*osb.BindRequest, error) {
 	}
 
 	vars := mux.Vars(r)
-	osbRequest.InstanceID = vars[instanceIDVarKey]
-	osbRequest.BindingID = vars[bindingIDVarKey]
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
+	osbRequest.BindingID = vars[osb.VarKeyBindingID]
 
 	return osbRequest, nil
 }
@@ -297,8 +289,8 @@ func unpackUnbindRequest(r *http.Request) (*osb.UnbindRequest, error) {
 	osbRequest := &osb.UnbindRequest{}
 
 	vars := mux.Vars(r)
-	osbRequest.InstanceID = vars[instanceIDVarKey]
-	osbRequest.BindingID = vars[bindingIDVarKey]
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
+	osbRequest.BindingID = vars[osb.VarKeyBindingID]
 
 	return osbRequest, nil
 }
@@ -340,9 +332,9 @@ func unpackUpdateRequest(r *http.Request) (*osb.UpdateInstanceRequest, error) {
 	osbRequest := &osb.UpdateInstanceRequest{}
 
 	vars := mux.Vars(r)
-	osbRequest.ServiceID = vars[serviceIDVarKey]
+	osbRequest.ServiceID = vars[osb.VarKeyServiceID]
 
-	planID := vars[planIDVarKey]
+	planID := vars[osb.VarKeyPlanID]
 	if planID != "" {
 		osbRequest.PlanID = &planID
 	}
