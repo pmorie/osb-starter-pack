@@ -9,6 +9,8 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
+	prom "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 )
@@ -20,7 +22,7 @@ type Server struct {
 }
 
 // New creates a new Router and registers all the necessary endpoints and handlers.
-func New(api *rest.APISurface) *Server {
+func New(api *rest.APISurface, reg prom.Gatherer) *Server {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/v2/catalog", api.GetCatalogHandler).Methods("GET")
@@ -30,6 +32,8 @@ func New(api *rest.APISurface) *Server {
 	router.HandleFunc("/v2/service_instances/{instance_id}", api.UpdateHandler).Methods("PATCH")
 	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.BindHandler).Methods("PUT")
 	router.HandleFunc("/v2/service_instances/{instance_id}/service_bindings/{binding_id}", api.UnbindHandler).Methods("DELETE")
+
+	router.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 
 	return &Server{
 		Router: router,
