@@ -12,7 +12,7 @@ import (
 	prom "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/pmorie/osb-starter-pack/pkg/rest"
+	"github.com/pmorie/osb-broker-lib/pkg/rest"
 )
 
 type Server struct {
