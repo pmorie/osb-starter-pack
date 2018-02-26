@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestUpdateInstance(t *testing.T) {
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		updateFunc   func(req *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error)
+		updateFunc   func(req *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error)
 		response     *osb.UpdateInstanceResponse
 		err          error
 	}{
@@ -34,7 +35,7 @@ func TestUpdateInstance(t *testing.T) {
 		},
 		{
 			name: "update returns errors.New",
-			updateFunc: func(req *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+			updateFunc: func(req *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestUpdateInstance(t *testing.T) {
 		},
 		{
 			name: "update returns osb.HTTPStatusCodeError",
-			updateFunc: func(req *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+			updateFunc: func(req *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,14 +58,14 @@ func TestUpdateInstance(t *testing.T) {
 		},
 		{
 			name: "update returns sync",
-			updateFunc: func(req *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+			updateFunc: func(req *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 				return &osb.UpdateInstanceResponse{}, nil
 			},
 			response: &osb.UpdateInstanceResponse{},
 		},
 		{
 			name: "update returns async",
-			updateFunc: func(req *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+			updateFunc: func(req *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 				return &osb.UpdateInstanceResponse{
 					Async: true,
 				}, nil

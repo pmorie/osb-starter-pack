@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestUnbind(t *testing.T) {
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		unbindFunc   func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error)
+		unbindFunc   func(req *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error)
 		response     *osb.UnbindResponse
 		err          error
 	}{
@@ -34,7 +35,7 @@ func TestUnbind(t *testing.T) {
 		},
 		{
 			name: "unbind returns errors.New",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
+			unbindFunc: func(req *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestUnbind(t *testing.T) {
 		},
 		{
 			name: "unbind returns osb.HTTPStatusCodeError",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
+			unbindFunc: func(req *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,7 +58,7 @@ func TestUnbind(t *testing.T) {
 		},
 		{
 			name: "OK",
-			unbindFunc: func(req *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
+			unbindFunc: func(req *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
 				return &osb.UnbindResponse{}, nil
 			},
 			response: &osb.UnbindResponse{},

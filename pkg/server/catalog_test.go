@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -24,13 +25,13 @@ func TestGetCatalog(t *testing.T) {
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		catalogFunc  func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error)
+		catalogFunc  func(c *broker.RequestContext) (*osb.CatalogResponse, error)
 		response     *osb.CatalogResponse
 		err          error
 	}{
 		{
 			name: "OK",
-			catalogFunc: func(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
+			catalogFunc: func(c *broker.RequestContext) (*osb.CatalogResponse, error) {
 				return okResponse, nil
 			},
 			response: okResponse,

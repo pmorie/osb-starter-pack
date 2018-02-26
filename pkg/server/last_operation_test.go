@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestLastOperation(t *testing.T) {
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		lastOpFunc   func(req *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error)
+		lastOpFunc   func(req *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error)
 		response     *osb.LastOperationResponse
 		err          error
 	}{
@@ -34,7 +35,7 @@ func TestLastOperation(t *testing.T) {
 		},
 		{
 			name: "lastOperation returns errors.New",
-			lastOpFunc: func(req *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
+			lastOpFunc: func(req *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestLastOperation(t *testing.T) {
 		},
 		{
 			name: "lastOperation returns osb.HTTPStatusCodeError",
-			lastOpFunc: func(req *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
+			lastOpFunc: func(req *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,7 +58,7 @@ func TestLastOperation(t *testing.T) {
 		},
 		{
 			name: "OK",
-			lastOpFunc: func(req *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
+			lastOpFunc: func(req *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
 				return &osb.LastOperationResponse{
 					State: osb.StateSucceeded,
 				}, nil

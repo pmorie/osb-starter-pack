@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 	"github.com/pmorie/osb-starter-pack/pkg/metrics"
 	"github.com/pmorie/osb-starter-pack/pkg/rest"
 
@@ -18,7 +19,7 @@ func TestBind(t *testing.T) {
 	cases := []struct {
 		name         string
 		validateFunc func(string) error
-		bindFunc     func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error)
+		bindFunc     func(req *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error)
 		response     *osb.BindResponse
 		err          error
 	}{
@@ -34,7 +35,7 @@ func TestBind(t *testing.T) {
 		},
 		{
 			name: "bind returns errors.New",
-			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
+			bindFunc: func(req *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
 				return nil, errors.New("oops")
 			},
 			err: osb.HTTPStatusCodeError{
@@ -44,7 +45,7 @@ func TestBind(t *testing.T) {
 		},
 		{
 			name: "bind returns osb.HTTPStatusCodeError",
-			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
+			bindFunc: func(req *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
 				return nil, osb.HTTPStatusCodeError{
 					StatusCode:  http.StatusBadGateway,
 					Description: strPtr("custom error"),
@@ -57,7 +58,7 @@ func TestBind(t *testing.T) {
 		},
 		{
 			name: "OK",
-			bindFunc: func(req *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
+			bindFunc: func(req *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
 				return &osb.BindResponse{}, nil
 			},
 			response: &osb.BindResponse{},
