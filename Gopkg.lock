@@ -44,6 +44,17 @@
   version = "0.0.3"
 
 [[projects]]
+  name = "github.com/pmorie/osb-broker-lib"
+  packages = [
+    "pkg/broker",
+    "pkg/metrics",
+    "pkg/rest",
+    "pkg/server"
+  ]
+  revision = "98849984a11f3f5e80f03dcf07fd16c2a56bc0e2"
+  version = "0.0.1"
+
+[[projects]]
   name = "github.com/prometheus/client_golang"
   packages = [
     "prometheus",
@@ -88,6 +99,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3a5a2c4137e09cbebab7ce866fae5bbfaa01c2d786ec6c13abcef1fb0b00ce29"
+  inputs-digest = "781a478296370ce804e2a8cfa16532a581512c0bcd65eb65da41f77e253457b4"
   solver-name = "gps-cdcl"
   solver-version = 1

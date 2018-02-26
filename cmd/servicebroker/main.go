@@ -13,9 +13,9 @@ import (
 	"github.com/golang/glog"
 	prom "github.com/prometheus/client_golang/prometheus"
 
-	"github.com/pmorie/osb-starter-pack/pkg/metrics"
-	"github.com/pmorie/osb-starter-pack/pkg/rest"
-	"github.com/pmorie/osb-starter-pack/pkg/server"
+	"github.com/pmorie/osb-broker-lib/pkg/metrics"
+	"github.com/pmorie/osb-broker-lib/pkg/rest"
+	"github.com/pmorie/osb-broker-lib/pkg/server"
 	"github.com/pmorie/osb-starter-pack/pkg/user"
 )
 

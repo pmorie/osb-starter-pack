@@ -37,3 +37,7 @@
   name = "github.com/pmorie/go-open-service-broker-client"
   version = "0.0.3"
 
+[[constraint]]
+  name = "github.com/pmorie/osb-broker-lib"
+  version = "0.0.1"
+
