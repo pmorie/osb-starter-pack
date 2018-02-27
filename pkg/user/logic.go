@@ -76,6 +76,30 @@ services:
               - "Clear"
               - "Beige"
               - "Grey"
+  - name: nondefault
+    id: 86064792-7ea2-467b-af93-ac9694d96d5c
+    description: The nondefault plan for the starter pack example service
+    free: true
+    schemas:
+      service_instance:
+        create:
+          "$schema": "http://json-schema.org/draft-04/schema"
+          "type": "object"
+          "title": "Parameters"
+          "properties":
+          - "name":
+              "title": "Some Name"
+              "type": "string"
+              "maxLength": 63
+              "default": "My Name"
+          - "color":
+              "title": "Color"
+              "type": "string"
+              "default": "Clear"
+              "enum":
+              - "Clear"
+              - "Black"
+              - "Blue"
 `
 
 	err := yaml.Unmarshal([]byte(data), &response)
