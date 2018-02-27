@@ -4,5 +4,5 @@ kind: ClusterServiceBroker
 metadata:
   name: broker-skeleton
 spec:
-  url: http://broker-skeleton-broker-skeleton.broker-skeleton.svc.cluster.local
+  url: http://{{ template "fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end }}
