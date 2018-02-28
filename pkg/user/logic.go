@@ -388,7 +388,7 @@ func DataverseToService(dataverses []*DataverseDescription) string {
     imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
   plans:
   - name: default
-    id: 86064792-7ea2-467b-af93-ac9694d96d5c
+    id: %s
     description: The default plan for the second starter pack example service
     free: true
     schemas:
