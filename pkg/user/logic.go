@@ -384,7 +384,7 @@ func DataverseToService(dataverses []*DataverseDescription) string {
   bindable: true
   plan_updateable: true
   metadata:
-    displayName: %s
+    displayName: "%s"
     imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
   plans:
   - name: default
