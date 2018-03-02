@@ -79,7 +79,7 @@ build the image, deploy the broker into your Kubernetes, and add a
 ## Adding your business logic
 
 To implement your broker, you fill out just a few methods and types in
-`pkg/user` package:
+`pkg/broker` package:
 
 - The `Options` type, which holds options for the broker
 - The `AddFlags` function, which adds CLI flags for an Options
