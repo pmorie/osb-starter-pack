@@ -23,6 +23,7 @@ image: linux
 
 clean:
 	rm -f servicebroker
+	rm -f servicebroker-linux
 
 push: image
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
@@ -45,4 +46,4 @@ provision: create-ns
 bind:
 	kubectl apply -f manifests/service-binding.yaml	
 
-.PHONY: build test linux image clean push deploy-help deploy-openshift create-ns provision bind
+.PHONY: build test linux image clean push deploy-helm deploy-openshift create-ns provision bind
