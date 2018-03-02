@@ -18,12 +18,12 @@ Open Service Broker.
 You'll need:
 
 - [`go`](https://golang.org/dl/)
-- A running [kubernetes](https://github.com/kubernetes/kubernetes) (or [openshift](https://github.com/openshift/origin/)) cluster
+- A running [Kubernetes](https://github.com/kubernetes/kubernetes) (or [openshift](https://github.com/openshift/origin/)) cluster
 - The [service-catalog](https://github.com/kubernetes-incubator/service-catalog)
   [installed](https://github.com/kubernetes-incubator/service-catalog/blob/master/docs/install.md)
   in that cluster
 
-If you're using [helm](https://helm.sh) to deploy this project, you'll need to
+If you're using [Helm](https://helm.sh) to deploy this project, you'll need to
 have it [installed](https://docs.helm.sh/using_helm/#quickstart) in the cluster.
 Make sure [RBAC is correctly configured](https://docs.helm.sh/using_helm/#rbac)
 for helm.
@@ -33,23 +33,43 @@ for helm.
 You can `go get` this repo or `git clone` it to start poking around right away.
 
 The project comes ready with a minimal example service that you can easily
-deploy and begin iterating on:
+deploy and begin iterating on.
+
+### Get the project
 
 ```console
 $ go get github.com/pmorie/osb-starter-pack/cmd/servicebroker
-# OR clone the repo
+```
+
+Or clone the repo:
+
+```console
 $ cd $GOPATH/src && mkdir -p github.com/pmorie && cd github.com/pmorie && git clone git://github.com/pmorie/osb-starter-pack
+```
 
-# change into the project directory
+Change into the project directory:
+
+```console
 $ cd $GOPATH/src/github.com/pmorie/osb-starter-pack
+```
 
-# You can deploy two different ways: helm or openshift templates
+### Deploy broker using Helm
 
-# deploy with helm
-$ make deploy-helm
+Deploy with Helm and pass custom image and tag name.
+Note: This also pushes the generated image with docker.
 
-# deploy with openshift templates (Note: You must already be logged into an OpenShift cluster)
-$ make deploy-openshift
+```console
+$ IMAGE=myimage TAG=latest make push deploy-helm
+```
+
+### Deploy broker using Openshift
+
+Deploy to OpenShift cluster by passing a custom image and tag name.
+Note: You must already be logged into an OpenShift cluster. 
+This also pushes the generated image with docker.
+
+```console
+$ IMAGE=myimage TAG=latest make push deploy-openshift
 ```
 
 Running either of these flavors of deploy targets will build the broker binary,
