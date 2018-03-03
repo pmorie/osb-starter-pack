@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -104,6 +106,7 @@ func unpackProvisionRequest(r *http.Request) (*osb.ProvisionRequest, error) {
 	// - unmarshaling the request body
 	// - getting IDs out of mux vars
 	// - getting query parameters from request URL
+	// - retrieve originating origin identity
 	osbRequest := &osb.ProvisionRequest{}
 	if err := unmarshalRequestBody(r, osbRequest); err != nil {
 		return nil, err
@@ -116,6 +119,11 @@ func unpackProvisionRequest(r *http.Request) (*osb.ProvisionRequest, error) {
 	if strings.ToLower(asyncQueryParamVal) == "true" {
 		osbRequest.AcceptsIncomplete = true
 	}
+	identity, err := retrieveOriginatingIdentity(r)
+	if err != nil {
+		return nil, err
+	}
+	osbRequest.OriginatingIdentity = identity
 
 	return osbRequest, nil
 }
@@ -171,6 +179,11 @@ func unpackDeprovisionRequest(r *http.Request) (*osb.DeprovisionRequest, error) 
 	if strings.ToLower(asyncQueryParamVal) == "true" {
 		osbRequest.AcceptsIncomplete = true
 	}
+	identity, err := retrieveOriginatingIdentity(r)
+	if err != nil {
+		return nil, err
+	}
+	osbRequest.OriginatingIdentity = identity
 
 	return osbRequest, nil
 }
@@ -277,6 +290,12 @@ func unpackBindRequest(r *http.Request) (*osb.BindRequest, error) {
 	vars := mux.Vars(r)
 	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
 	osbRequest.BindingID = vars[osb.VarKeyBindingID]
+	identity, err := retrieveOriginatingIdentity(r)
+	if err != nil {
+		return nil, err
+	}
+
+	osbRequest.OriginatingIdentity = identity
 
 	return osbRequest, nil
 }
@@ -299,7 +318,6 @@ func (s *APISurface) UnbindHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	glog.Infof("Received UnbindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
-
 	c := &broker.RequestContext{
 		Writer:  w,
 		Request: r,
@@ -321,6 +339,12 @@ func unpackUnbindRequest(r *http.Request) (*osb.UnbindRequest, error) {
 	vars := mux.Vars(r)
 	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
 	osbRequest.BindingID = vars[osb.VarKeyBindingID]
+
+	identity, err := retrieveOriginatingIdentity(r)
+	if err != nil {
+		return nil, err
+	}
+	osbRequest.OriginatingIdentity = identity
 
 	return osbRequest, nil
 }
@@ -374,5 +398,35 @@ func unpackUpdateRequest(r *http.Request) (*osb.UpdateInstanceRequest, error) {
 		osbRequest.PlanID = &planID
 	}
 
+	identity, err := retrieveOriginatingIdentity(r)
+	if err != nil {
+		return nil, err
+	}
+	osbRequest.OriginatingIdentity = identity
+
 	return osbRequest, nil
+}
+
+// retrieveOriginatingIdentity retrieves the originating identity from
+// the request header.
+func retrieveOriginatingIdentity(r *http.Request) (*osb.OriginatingIdentity, error) {
+	identityHeader := r.Header.Get(osb.OriginatingIdentityHeader)
+	if identityHeader != "" {
+		identitySlice := strings.Split(identityHeader, " ")
+		if len(identitySlice) != 2 {
+			glog.Infof("invalid header for originating origin - %v", identityHeader)
+			return nil, fmt.Errorf("invalid originating identity header")
+		}
+		// Base64 decode the value string so the value is passed as valid JSON.
+		val, err := base64.StdEncoding.DecodeString(identitySlice[1])
+		if err != nil {
+			glog.Infof("invalid header for originating origin - %v", identityHeader)
+			return nil, fmt.Errorf("invalid encoding for value of originating identity header")
+		}
+		return &osb.OriginatingIdentity{
+			Platform: identitySlice[0],
+			Value:    string(val),
+		}, nil
+	}
+	return nil, fmt.Errorf("unable to find originating identity")
 }
