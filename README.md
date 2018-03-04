@@ -1,17 +1,18 @@
-# osb-starter-pack
+# OSB Starter Pack
 
 [![Build Status](https://travis-ci.org/pmorie/osb-starter-pack.svg?branch=master)](https://travis-ci.org/pmorie/osb-starter-pack "Travis")
 
-A go quickstart for creating service brokers that implement the
-[Open Service Broker API](https://github.com/openservicebrokerapi/servicebroker).
-Broker authors implement an interface that uses the same types as the
-[go-open-service-broker-client](https://github.com/pmorie/go-open-service-broker-client)
+A go quickstart for creating service brokers that implement the [Open Service
+Broker API](https://github.com/openservicebrokerapi/servicebroker) based on
+[`osb-broker-lib`](https://github.com/pmorie/osb-broker-lib). Broker authors
+implement an interface that uses the same types as the
+[`go-open-service-broker-client`](https://github.com/pmorie/go-open-service-broker-client)
 project.
 
 ## Who should use this project?
 
 You should use this project if you're looking for a quick way to implement an
-Open Service Broker.
+Open Service Broker and start iterating on it.
 
 ## Prerequisites
 
