@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/pmorie/osb-starter-pack/pkg/rest"
+	"github.com/SamiSousa/dataverse-broker/pkg/rest"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )

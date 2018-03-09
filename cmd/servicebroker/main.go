@@ -12,9 +12,9 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/pmorie/osb-starter-pack/pkg/rest"
-	"github.com/pmorie/osb-starter-pack/pkg/server"
-	"github.com/pmorie/osb-starter-pack/pkg/user"
+	"github.com/SamiSousa/dataverse-broker/pkg/rest"
+	"github.com/SamiSousa/dataverse-broker/pkg/server"
+	"github.com/SamiSousa/dataverse-broker/pkg/user"
 )
 
 var options struct {

@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
-	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/SamiSousa/dataverse-broker/pkg/broker"
 )
 
 // NewBusinessLogic is a hook that is called with the Options the program is run

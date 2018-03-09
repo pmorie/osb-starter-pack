@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/SamiSousa/dataverse-broker/pkg/broker"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )

@@ -9,7 +9,7 @@ import (
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 
-	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/SamiSousa/dataverse-broker/pkg/broker"
 )
 
 // APISurface is a type that describes a OSB REST API surface. APISurface is
