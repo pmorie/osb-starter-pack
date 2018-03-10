@@ -166,10 +166,10 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 	response := osb.ProvisionResponse{}
 
-	exampleInstance := &exampleInstance{ID: pr.InstanceID, Params: pr.Parameters}
-	b.instances[pr.InstanceID] = exampleInstance
+	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
+	b.instances[request.InstanceID] = exampleInstance
 
-	if pr.AcceptsIncomplete {
+	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
 
