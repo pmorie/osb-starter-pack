@@ -40,13 +40,12 @@ type BusinessLogic struct {
 
 var _ broker.BusinessLogic = &BusinessLogic{}
 
-// Conrad: what does this do
 func DataverseToYAML() string {
 
 	harvard := "https://dataverse.harvard.edu"
 	target_dataverse := harvard //demo_dataverse
 
-	dataverses, err := GetDataverses(&target_dataverse, 1)
+	dataverses, err := GetDataverses(&target_dataverse, 3)
 
 	if err != nil{
 		panic(err)
@@ -291,6 +290,7 @@ func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescripti
 		if err != nil{
 			// exit on error
 			fmt.Println("Error on http GET at address", *base + search_uri + options + strconv.Itoa(start) + "&per_page="+ strconv.Itoa(per_page))
+			fmt.Println(err)
 			panic("")
 		}
 
@@ -384,11 +384,11 @@ func DataverseToService(dataverses []*DataverseDescription) string {
   bindable: true
   plan_updateable: true
   metadata:
-    displayName: "%s"
+    displayName: %s
     imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
   plans:
   - name: default
-    id: %s
+    id: 86064792-7ea2-467b-af93-ac9694d96d5c
     description: The default plan for the second starter pack example service
     free: true
     schemas:
@@ -411,8 +411,7 @@ func DataverseToService(dataverses []*DataverseDescription) string {
               - "Clear"
               - "Beige"
               - "Grey"
-`, strings.Replace(dataverses[i].Name, " ", "", -1), ReturnGUID(), dataverses[i].Identifier, ReturnGUID())
-
+`, strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)), ReturnGUID(), strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)))
 	}
 
 	return services
