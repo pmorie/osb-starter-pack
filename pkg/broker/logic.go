@@ -60,7 +60,7 @@ services:
 
 }
 
-func (b *BusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
+func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogResponse, error) {
 
 	response := &osb.CatalogResponse{}
 
@@ -157,7 +157,7 @@ func (b *BusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb
 // 	return response, nil
 // }
 
-func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWriter, r *http.Request) (*osb.ProvisionResponse, error) {
+func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 	// Your provision business logic goes here
 
 	// example implementation:
@@ -176,7 +176,7 @@ func (b *BusinessLogic) Provision(pr *osb.ProvisionRequest, w http.ResponseWrite
 	return &response, nil
 }
 
-func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.ResponseWriter, r *http.Request) (*osb.DeprovisionResponse, error) {
+func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
 	// Your deprovision business logic goes here
 
 	// example implementation:
@@ -194,13 +194,13 @@ func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, w http.Resp
 	return &response, nil
 }
 
-func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, w http.ResponseWriter, r *http.Request) (*osb.LastOperationResponse, error) {
+func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
 	// Your last-operation business logic goes here
 
 	return nil, nil
 }
 
-func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r *http.Request) (*osb.BindResponse, error) {
+func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
 	// Your bind business logic goes here
 
 	// example implementation:
@@ -224,12 +224,12 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, w http.ResponseWriter, r 
 	return &response, nil
 }
 
-func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, w http.ResponseWriter, r *http.Request) (*osb.UnbindResponse, error) {
+func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
 	// Your unbind business logic goes here
 	return &osb.UnbindResponse{}, nil
 }
 
-func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, w http.ResponseWriter, r *http.Request) (*osb.UpdateInstanceResponse, error) {
+func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
 	// Your logic for updating a service goes here.
 	response := osb.UpdateInstanceResponse{}
 	if request.AcceptsIncomplete {
