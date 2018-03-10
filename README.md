@@ -10,6 +10,8 @@ implement an interface that uses the same types as the
 [`go-open-service-broker-client`](https://github.com/pmorie/go-open-service-broker-client)
 project.
 
+This project uses [`osb-starter-pack`](https://github.com/pmorie/osb-starter-pack).
+
 ## Who should use this project?
 
 You should use this project if you're interfacing a containerized application in Kubernetes that will utilize data stored on Dataverse.

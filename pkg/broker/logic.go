@@ -74,89 +74,6 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogRespon
 	return response, nil
 }
 
-// func (b *BusinessLogic) GetCatalog(w http.ResponseWriter, r *http.Request) (*osb.CatalogResponse, error) {
-// 	// Your catalog business logic goes here
-// 	response := &osb.CatalogResponse{}
-
-// 	data := `
-// ---
-// services:
-// - name: example-starter-pack-service
-//   id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a
-//   description: The example service from the osb starter pack!
-//   bindable: true
-//   plan_updateable: true
-//   metadata:
-//     displayName: "Example starter-pack service"
-//     imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
-//   plans:
-//   - name: default
-//     id: 86064792-7ea2-467b-af93-ac9694d96d5b
-//     description: The default plan for the starter pack example service
-//     free: true
-//     schemas:
-//       service_instance:
-//         create:
-//           "$schema": "http://json-schema.org/draft-04/schema"
-//           "type": "object"
-//           "title": "Parameters"
-//           "properties":
-//           - "name":
-//               "title": "Some Name"
-//               "type": "string"
-//               "maxLength": 63
-//               "default": "My Name"
-//           - "color":
-//               "title": "Color"
-//               "type": "string"
-//               "default": "Clear"
-//               "enum":
-//               - "Clear"
-//               - "Beige"
-//               - "Grey"
-// - name: example-starter-pack-service2
-//   id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246b
-//   description: Second service
-//   bindable: true
-//   plan_updateable: true
-//   metadata:
-//     displayName: "Example second service"
-//     imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
-//   plans:
-//   - name: default
-//     id: 86064792-7ea2-467b-af93-ac9694d96d5c
-//     description: The default plan for the second starter pack example service
-//     free: true
-//     schemas:
-//       service_instance:
-//         create:
-//           "$schema": "http://json-schema.org/draft-04/schema"
-//           "type": "object"
-//           "title": "Parameters"
-//           "properties":
-//           - "name":
-//               "title": "Some Name"
-//               "type": "string"
-//               "maxLength": 63
-//               "default": "My Name"
-//           - "color":
-//               "title": "Color"
-//               "type": "string"
-//               "default": "Clear"
-//               "enum":
-//               - "Clear"
-//               - "Beige"
-//               - "Grey"
-// `
-
-// 	err := yaml.Unmarshal([]byte(data), &response)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return response, nil
-// }
-
 func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
 	// Your provision business logic goes here
 
@@ -344,18 +261,6 @@ func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescripti
 		start += response.Data.Count_in_response
 	}
 
-	/*
-	for i := 0; i < len(dataverses); i++{
-		// print for good measure
-		byt, err := json.MarshalIndent(dataverses[i], "", "\t")
-		if err != nil{
-			panic("Error in  json Marshaling")
-			
-		}
-		fmt.Printf("%s\n", string(byt))
-	}
-	*/
-	
 	
 	return dataverses, nil
 	
@@ -366,16 +271,6 @@ func DataverseToService(dataverses []*DataverseDescription) string {
 	var services string
 
 	for i := 0; i < len(dataverses); i++ {
-
-		// // Descriptions cannot be empty, but the Dataverse object
-		// // does not require their own descriptions to be non-empty
-		// // So, need to check
-		// var desc string
-		// if dataverses[i].Description == "" {
-		// 	desc = "none"
-		// } else {
-		// 	desc = dataverses[i].Description
-		// }
 
 		services = services + fmt.Sprintf(
 `- name: %s
