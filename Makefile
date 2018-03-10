@@ -8,41 +8,51 @@ TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
 build:
-	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -i github.com/SamiSousa/dataverse-broker/cmd/servicebroker
 
-test:
+test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
-linux:
+linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -o servicebroker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/servicebroker
 
-image: linux
+image: linux ## Builds a Linux based image
 	cp servicebroker-linux image/servicebroker
 	$(SUDO_CMD) docker build image/ -t "$(IMAGE):$(TAG)"
 
-clean:
+clean: ## Cleans up build artifacts
 	rm -f servicebroker
+	rm -f servicebroker-linux
 
-push: image
+push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
 
-deploy-helm: image
+deploy-helm: image ## Deploys image with helm
 	helm upgrade --install broker-skeleton --namespace broker-skeleton \
 	charts/servicebroker \
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
-deploy-openshift: image
+deploy-openshift: image ## Deploys image to openshift
 	oc new-project osb-starter-pack
 	oc process -f openshift/starter-pack.yaml -p IMAGE=$(IMAGE):$(TAG) | oc create -f -
 
-create-ns:
+create-ns: ## Cleans up the namespaces
 	kubectl create ns test-ns
 
-provision: create-ns
-	kubectl apply -f manifests/service-instance.yaml 
+provision: create-ns ## Provisions a service instance
+	kubectl apply -f manifests/service-instance.yaml
 
-bind:
-	kubectl apply -f manifests/service-binding.yaml	
+bind: ## Creates a binding
+	kubectl apply -f manifests/service-binding.yaml
 
-.PHONY: build test linux image clean push deploy-help deploy-openshift create-ns provision bind
+help: ## Shows the help
+	@echo 'Usage: make <OPTIONS> ... <TARGETS>'
+	@echo ''
+	@echo 'Available targets are:'
+	@echo ''
+	@grep -E '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+        awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo ''
+
+.PHONY: build test linux image clean push deploy-helm deploy-openshift create-ns provision bind help
