@@ -34,7 +34,7 @@ type BusinessLogic struct {
 	instances map[string]*exampleInstance
 }
 
-var _ broker.BusinessLogic = &BusinessLogic{}
+var _ broker.Interface = &BusinessLogic{}
 
 func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogResponse, error) {
 	// Your catalog business logic goes here
