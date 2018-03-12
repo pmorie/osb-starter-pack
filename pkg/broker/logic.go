@@ -38,7 +38,7 @@ type BusinessLogic struct {
 	instances map[string]*exampleInstance
 }
 
-var _ broker.BusinessLogic = &BusinessLogic{}
+var _ broker.Interface = &BusinessLogic{}
 
 func DataverseToYAML() string {
 

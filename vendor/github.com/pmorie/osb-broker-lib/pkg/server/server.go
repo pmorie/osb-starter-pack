@@ -16,9 +16,14 @@ import (
 
 )
 
+// Server is the server for the OSB REST API and the metrics API. A Server glues
+// the HTTP operations to their implementations.
 type Server struct {
-	// Router is a mux.Router that registers the handlers for the different OSB
-	// API operations.
+	// Router is a mux.Router that registers the handlers for the HTTP
+	// operations:
+	//
+	// - OSB API
+	// - metrics API
 	Router *mux.Router
 }
 

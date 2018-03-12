@@ -6,10 +6,12 @@ import (
 
 const actionsMetricName = "osb_actions_total"
 
+// OSBMetricsCollector - action counter
 type OSBMetricsCollector struct {
 	Actions *prom.CounterVec
 }
 
+// New - constructs a metrics collector with an action counter
 func New() *OSBMetricsCollector {
 	return &OSBMetricsCollector{
 		Actions: prom.NewCounterVec(prom.CounterOpts{
