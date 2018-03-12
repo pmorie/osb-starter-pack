@@ -6,10 +6,10 @@ import (
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
-// BusinessLogic contains the business logic for the broker's operations.
-// BusinessLogic is the interface broker authors should implement and is
+// Interface contains the business logic for the broker's operations.
+// Interface is the interface broker authors should implement and is
 // embedded in an APISurface.
-type BusinessLogic interface {
+type Interface interface {
 	// ValidateBrokerAPIVersion encapsulates the business logic of validating
 	// the OSB API version sent to the broker with every request and returns
 	// an error.
