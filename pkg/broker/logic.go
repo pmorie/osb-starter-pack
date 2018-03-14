@@ -279,11 +279,11 @@ func DataverseToService(dataverses []*DataverseDescription) string {
   bindable: true
   plan_updateable: true
   metadata:
-    displayName: %s
-    imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
+    displayName: "%s"
+    imageUrl: %s
   plans:
   - name: default
-    id: 86064792-7ea2-467b-af93-ac9694d96d5c
+    id: %s-default
     description: The default plan for the second starter pack example service
     free: true
     schemas:
@@ -306,7 +306,13 @@ func DataverseToService(dataverses []*DataverseDescription) string {
               - "Clear"
               - "Beige"
               - "Grey"
-`, strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)), ReturnGUID(), strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)))
+`, 			strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)), 
+			dataverses[i].Identifier,
+			// Using the Identifier field as the id since it's unique to the Dataverse server;
+			// should concatenate ID of Dataverse server as well
+			strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)),
+			dataverses[i].Image_url,
+			dataverses[i].Identifier) 
 	}
 
 	return services
@@ -330,24 +336,41 @@ func ReturnGUID() string {
 
 // /Dataverse Structs
 
+// object returned by checksum for datafiles
+type DatafileChecksum struct{
+	Type string `json:"type"`
+	Value string `json:"value"`
+}
+
 // type for JSON portion describing a dataverse on Server
 type DataverseDescription struct{
 	// Wow, capitalization matters for structs in go?
-	Description string `json:"description"`
-	Identifier string `json:"identifier"`
+	// Fields for dataverses
 	Name string `json:"name"`
-	Published_at string `json:"published_at"`
 	Type string `json:"type"`
 	Url string `json:"url"`
+	Image_url string `json:"image_url"`
+	Identifier string `json:"identifier"`
+	Description string `json:"description"`
+	Published_at string `json:"published_at"`
 
-	// the ones below might only populate for data files, maybe omit empty"
-    Image_url string `json:"image_url,omitempty"`
+	// Fields for datasets
+	Global_id string `json:"global_id,omitempty"`
+	CitationHtml string `json:"citationHtml,omitempty"`
+	Citation string `json:"citation,omitempty"`
+	Authors []string `json:"authors,omitempty"`
+
+	// Fields for datafiles
     File_id string `json:"file_id,omitempty"`
     File_type string `json:"file_type,omitempty"`
     File_content_type string `json:"file_content_type,omitempty"`
     Size_in_bytes int `json:"size_in_bytes,omitempty"`
     Md5 string `json:"md5,omitempty"`
     Dataset_citation string `json:"dataset_citation,omitempty"`
+    Checksum DatafileChecksum `json:"checksum,omitempty"`
+
+    // Fields for advanced search (to be added ...)
+    
 
 }
 
@@ -356,9 +379,12 @@ type DataverseResponse struct{
 	Count_in_response int `json:"count_in_response"`
 	Items []DataverseDescription `json:"items"`
 	Q string `json:"q"`
-	Spelling_alternatives interface{} `json:"spelling_alternatives,omitempty"`
+	Spelling_alternatives interface{} `json:"spelling_alternatives,omitempty"` // This is my lazy approach to a field I don't need
 	Start int `json:"start"`
 	Total_count int `json:"total_count"`
+
+	// Only a partial list .. 
+
 }
 
 // type for JSON response from Dataverse API
