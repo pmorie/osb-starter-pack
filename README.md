@@ -58,18 +58,11 @@ $ cd $GOPATH/src/github.com/SamiSousa/dataverse-broker
 
 ### Deploy broker using Helm
 
-Deploy with Helm and pass custom image and tag name.
-Note: This also pushes the generated image with docker.
-
 ```console
 $ make deploy-helm
 ```
 
 ### Deploy broker using Openshift
-
-Deploy to OpenShift cluster by passing a custom image and tag name.
-Note: You must already be logged into an OpenShift cluster. 
-This also pushes the generated image with docker.
 
 ```console
 $ make deploy-openshift
