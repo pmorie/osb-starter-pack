@@ -83,6 +83,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 	response := osb.ProvisionResponse{}
 
+	// Create an example instance
 	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
 	b.instances[request.InstanceID] = exampleInstance
 
@@ -288,6 +289,25 @@ func DataverseToService(dataverses []*DataverseDescription) string {
     free: true
     schemas:
       service_instance:
+        create:
+          "$schema": "http://json-schema.org/draft-04/schema"
+          "type": "object"
+          "title": "Parameters"
+          "properties":
+          - "name":
+              "title": "Some Name"
+              "type": "string"
+              "maxLength": 63
+              "default": "My Name"
+          - "color":
+              "title": "Color"
+              "type": "string"
+              "default": "Clear"
+              "enum":
+              - "Clear"
+              - "Beige"
+              - "Grey"
+      service_binding:
         create:
           "$schema": "http://json-schema.org/draft-04/schema"
           "type": "object"
