@@ -133,7 +133,7 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	}
 
 	response := osb.BindResponse{
-		Credentials: {
+		Credentials: map[string]string{
 			"example1": "hello",
 			"example2": "hello2"}, //instance.Params,
 	}
