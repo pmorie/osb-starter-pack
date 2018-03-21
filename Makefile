@@ -7,15 +7,15 @@ IMAGE ?= quay.io/osb-starter-pack/servicebroker
 TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
-build: ## Builds the starter pack
-	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
+build:
+	go build -i github.com/SamiSousa/dataverse-broker/cmd/servicebroker
 
 test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -o servicebroker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/servicebroker
 
 image: linux ## Builds a Linux based image
 	cp servicebroker-linux image/servicebroker

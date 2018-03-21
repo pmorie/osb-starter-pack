@@ -13,6 +13,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/pmorie/osb-broker-lib/pkg/rest"
+
 )
 
 // Server is the server for the OSB REST API and the metrics API. A Server glues
