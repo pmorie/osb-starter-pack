@@ -135,8 +135,7 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	response := osb.BindResponse{
 		Credentials: {
 			"example1": "hello",
-			"example2": "hello2"
-			}, //instance.Params,
+			"example2": "hello2"}, //instance.Params,
 	}
 	if request.AcceptsIncomplete {
 		response.Async = b.async
