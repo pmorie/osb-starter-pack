@@ -4,7 +4,7 @@ ifdef USE_SUDO_FOR_DOCKER
 endif
 
 #IMAGE ?= quay.io/osb-starter-pack/servicebroker
-IMAGE ?= quay.io/osb-starter-pack/dataverse-broker
+IMAGE ?= quay.io/brutto/dataverse-broker
 TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
