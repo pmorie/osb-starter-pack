@@ -71,6 +71,15 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogRespon
 		return nil, err
 	}
 
+	// Debug unmarshall
+	// Print response to console
+	fmt.Println("Response: ")
+	res_print, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(res_print))
+
 	return response, nil
 }
 
@@ -156,9 +165,11 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		}
 	}
 
+	/*
 	instance.Params = map[string]interface{}{
 			"example1": "hello",
 			"example2": "hello2"}
+	*/
 
 	response := osb.BindResponse{
 		Credentials: instance.Params,
