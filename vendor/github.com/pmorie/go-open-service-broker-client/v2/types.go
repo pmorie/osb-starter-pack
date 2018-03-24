@@ -85,22 +85,22 @@ type Plan struct {
 	// facing content and display instructions.  Metadata may contain
 	// platform-conventional values.  Optional.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
-	// ParameterSchemas requires a client API version >=2.13.
+	// Schemas requires a client API version >=2.13.
 	//
-	// ParameterSchemas is a set of optional JSONSchemas that describe
+	// Schemas is a set of optional JSONSchemas that describe
 	// the expected parameters for creation and update of instances and
 	// creation of bindings.
-	ParameterSchemas *ParameterSchemas `json:"schemas,omitempty"`
+	Schemas *Schemas `json:"schemas,omitempty"`
 }
 
-// ParameterSchemas requires a client API version >=2.13.
+// Schemas requires a client API version >=2.13.
 //
-// ParameterSchemas is a set of optional JSONSchemas that describe
+// Schemas is a set of optional JSONSchemas that describe
 // the expected parameters for creation and update of instances and
 // creation of bindings.
-type ParameterSchemas struct {
-	ServiceInstances *ServiceInstanceSchema `json:"service_instance,omitempty"`
-	ServiceBindings  *ServiceBindingSchema  `json:"service_binding,omitempty"`
+type Schemas struct {
+	ServiceInstance *ServiceInstanceSchema `json:"service_instance,omitempty"`
+	ServiceBinding  *ServiceBindingSchema  `json:"service_binding,omitempty"`
 }
 
 // ServiceInstanceSchema requires a client API version >=2.13.
@@ -108,8 +108,8 @@ type ParameterSchemas struct {
 // ServiceInstanceSchema represents a plan's schemas for creation and
 // update of an API resource.
 type ServiceInstanceSchema struct {
-	Create *InputParameters `json:"create,omitempty"`
-	Update *InputParameters `json:"update,omitempty"`
+	Create *InputParametersSchema `json:"create,omitempty"`
+	Update *InputParametersSchema `json:"update,omitempty"`
 }
 
 // ServiceBindingSchema requires a client API version >=2.13.
@@ -117,15 +117,28 @@ type ServiceInstanceSchema struct {
 // ServiceBindingSchema represents a plan's schemas for the parameters
 // accepted for binding creation.
 type ServiceBindingSchema struct {
-	Create *InputParameters `json:"create,omitempty"`
+	Create *RequestResponseSchema `json:"create,omitempty"`
 }
 
-// InputParameters requires a client API version >=2.13.
+// InputParametersSchema requires a client API version >=2.13.
 //
-// InputParameters represents a schema for input parameters for creation or
+// InputParametersSchema represents a schema for input parameters for creation or
 // update of an API resource.
-type InputParameters struct {
+type InputParametersSchema struct {
+	// The schema definition for the input parameters. Each input parameter
+	// is expressed as a property within a JSON object.
 	Parameters interface{} `json:"parameters,omitempty"`
+}
+
+// RequestResponseSchema requires a client API version >=2.14.
+//
+// RequestResponseSchema contains a schema for input parameters for creation or
+// update of an API resource, and a schema for the credentials returned by the
+// broker
+type RequestResponseSchema struct {
+	InputParametersSchema
+	// The schema definition for the broker's response to the bind request.
+	Response interface{} `json:"response,omitempty"`
 }
 
 // OriginatingIdentity requires a client API version >=2.13.
@@ -189,7 +202,44 @@ type ProvisionResponse struct {
 	DashboardURL *string `json:"dashboard_url,omitempty"`
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
-	OperationKey *OperationKey `json:"operationKey,omitempty"`
+	OperationKey *OperationKey `json:"operation,omitempty"`
+	// ExtensionAPIs is a list of extension APIs for this instance.
+	//
+	// ExtensionsAPI is an ALPHA API attribute and may change. Alpha
+	// features must be enabled and the client must be using the
+	// latest API Version in order to use this.
+	ExtensionAPIs []ExtensionAPI `json:"extension_apis,omitempty"`
+}
+
+// ExtensionAPI contains information about an API endpoint that describes
+// extension operations on a ServiceInstance.
+//
+// ExtensionAPI is an ALPHA API attribute and may change. Alpha
+// features must be enabled and the client must be using the
+// latest API Version in order to use this.
+type ExtensionAPI struct {
+	// DiscoveryURL is a URI pointing to a valid OpenAPI 3.0+ document
+	// describing the API extension(s) to the Open Service Broker API including,
+	// endpoints, parameters, authentication mechanism and any other detail the
+	// platform needs for invocation. The location of the API extension
+	// endpoint(s) can be local to the Service Broker or on a remote server. If
+	// local to the Service Broker the same authentication method for normal
+	// Service Broker calls must be used.
+	DiscoveryURL string `json:"discovery_url,omitempty"`
+	// ServerURL is a URI pointing to a remote server where API extensions will
+	// run. This URI will be used as the basepath for the paths objects
+	// described by the `discovery_url` OpenAPI document. If ServerURL is
+	// missing, it means that the paths are invoked relative to the service
+	// broker URL.
+	ServerURL string `json:"server_url,omitempty"`
+	// Credentials is a set of authentication details for running any of the
+	// extension API calls, especially for those running on remote servers.
+	//
+	// The information in Credentials should be treated as SECRET.
+	Credentials map[string]interface{} `json:"credentials,omitempty"`
+	// AdheresTo is a URI refering to a specification detailing the interface
+	// the OpenAPI document hosted at the `discovery_url` adheres to.
+	AdheresTo string `json:"adheres_to,omitempty"`
 }
 
 // OperationKey is an extra identifier from the broker in order to provide extra
@@ -253,7 +303,7 @@ type UpdateInstanceResponse struct {
 	Async bool `json:"async"`
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
-	OperationKey *OperationKey `json:"operationKey,omitempty"`
+	OperationKey *OperationKey `json:"operation,omitempty"`
 }
 
 // DeprovisionRequest represents a request to deprovision an instance of a
@@ -282,7 +332,7 @@ type DeprovisionResponse struct {
 	Async bool `json:"async"`
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
-	OperationKey *OperationKey `json:"operationKey,omitempty"`
+	OperationKey *OperationKey `json:"operation,omitempty"`
 }
 
 // LastOperationRequest represents a request to a broker to give the state of
@@ -424,7 +474,7 @@ type BindResponse struct {
 	//
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
-	OperationKey *OperationKey `json:"operationKey,omitempty"`
+	OperationKey *OperationKey `json:"operation,omitempty"`
 }
 
 // UnbindRequest represents a request to unbind a particular binding.
@@ -466,7 +516,7 @@ type UnbindResponse struct {
 	//
 	// OperationKey is an extra identifier supplied by the broker to identify
 	// asynchronous operations.
-	OperationKey *OperationKey `json:"operationKey,omitempty"`
+	OperationKey *OperationKey `json:"operation,omitempty"`
 }
 
 // GetBindingRequest represents a request to do a GET on a particular binding.

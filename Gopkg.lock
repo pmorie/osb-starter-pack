@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/pmorie/go-open-service-broker-client"
   packages = ["v2"]
-  revision = "e8aa16c9036317bd59ced8921e9da6197ab577e3"
-  version = "0.0.5"
+  revision = "87e2f174c3a1d416379eaa0cfe29f6fa0668e780"
+  version = "0.0.9"
 
 [[projects]]
   name = "github.com/pmorie/osb-broker-lib"
@@ -99,6 +99,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "367a2c457c4f330fa5635d42d725165f25df5d4cacfaa4e456c329486b7c5e7d"
+  inputs-digest = "63b5992c960966576af377b9ec5d490cffce3adac241fd21b51185eaafe3c1aa"
   solver-name = "gps-cdcl"
   solver-version = 1
