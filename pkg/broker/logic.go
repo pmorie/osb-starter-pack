@@ -26,7 +26,7 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 // BusinessLogic provides an implementation of the broker.BusinessLogic
 // interface.
 type BusinessLogic struct {
-	// Indiciates if the broker should handle the requests asynchronously.
+	// Indicates if the broker should handle the requests asynchronously.
 	async bool
 	// Synchronize go routines.
 	sync.RWMutex
@@ -36,9 +36,9 @@ type BusinessLogic struct {
 
 var _ broker.Interface = &BusinessLogic{}
 
-func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*osb.CatalogResponse, error) {
+func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogResponse, error) {
 	// Your catalog business logic goes here
-	response := &osb.CatalogResponse{}
+	response := &broker.CatalogResponse{}
 
 	data := `
 ---
@@ -86,14 +86,14 @@ services:
 	return response, nil
 }
 
-func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
+func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*broker.ProvisionResponse, error) {
 	// Your provision business logic goes here
 
 	// example implementation:
 	b.Lock()
 	defer b.Unlock()
 
-	response := osb.ProvisionResponse{}
+	response := broker.ProvisionResponse{}
 
 	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
 	b.instances[request.InstanceID] = exampleInstance
@@ -105,14 +105,14 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 	return &response, nil
 }
 
-func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.RequestContext) (*osb.DeprovisionResponse, error) {
+func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.RequestContext) (*broker.DeprovisionResponse, error) {
 	// Your deprovision business logic goes here
 
 	// example implementation:
 	b.Lock()
 	defer b.Unlock()
 
-	response := osb.DeprovisionResponse{}
+	response := broker.DeprovisionResponse{}
 
 	delete(b.instances, request.InstanceID)
 
@@ -123,13 +123,13 @@ func (b *BusinessLogic) Deprovision(request *osb.DeprovisionRequest, c *broker.R
 	return &response, nil
 }
 
-func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*osb.LastOperationResponse, error) {
+func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*broker.LastOperationResponse, error) {
 	// Your last-operation business logic goes here
 
 	return nil, nil
 }
 
-func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext) (*osb.BindResponse, error) {
+func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext) (*broker.BindResponse, error) {
 	// Your bind business logic goes here
 
 	// example implementation:
@@ -143,8 +143,10 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		}
 	}
 
-	response := osb.BindResponse{
-		Credentials: instance.Params,
+	response := broker.BindResponse{
+		BindResponse: osb.BindResponse{
+			Credentials: instance.Params,
+		},
 	}
 	if request.AcceptsIncomplete {
 		response.Async = b.async
@@ -153,14 +155,14 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	return &response, nil
 }
 
-func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, c *broker.RequestContext) (*osb.UnbindResponse, error) {
+func (b *BusinessLogic) Unbind(request *osb.UnbindRequest, c *broker.RequestContext) (*broker.UnbindResponse, error) {
 	// Your unbind business logic goes here
-	return &osb.UnbindResponse{}, nil
+	return &broker.UnbindResponse{}, nil
 }
 
-func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*osb.UpdateInstanceResponse, error) {
+func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.RequestContext) (*broker.UpdateInstanceResponse, error) {
 	// Your logic for updating a service goes here.
-	response := osb.UpdateInstanceResponse{}
+	response := broker.UpdateInstanceResponse{}
 	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
