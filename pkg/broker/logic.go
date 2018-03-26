@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/golang/glog"
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
-	"gopkg.in/yaml.v2"
 )
 
 // NewBusinessLogic is a hook that is called with the Options the program is run
@@ -36,52 +36,61 @@ type BusinessLogic struct {
 
 var _ broker.Interface = &BusinessLogic{}
 
+func truePtr() *bool {
+	b := true
+	return &b
+}
+
 func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogResponse, error) {
 	// Your catalog business logic goes here
 	response := &broker.CatalogResponse{}
-
-	data := `
----
-services:
-- name: example-starter-pack-service
-  id: 4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a
-  description: The example service from the osb starter pack!
-  bindable: true
-  plan_updateable: true
-  metadata:
-    displayName: "Example starter-pack service"
-    imageUrl: https://avatars2.githubusercontent.com/u/19862012?s=200&v=4
-  plans:
-  - name: default
-    id: 86064792-7ea2-467b-af93-ac9694d96d5b
-    description: The default plan for the starter pack example service
-    free: true
-    schemas:
-      service_instance:
-        create:
-          "$schema": "http://json-schema.org/draft-04/schema"
-          "type": "object"
-          "title": "Parameters"
-          "properties":
-          - "name":
-              "title": "Some Name"
-              "type": "string"
-              "maxLength": 63
-              "default": "My Name"
-          - "color":
-              "title": "Color"
-              "type": "string"
-              "default": "Clear"
-              "enum":
-              - "Clear"
-              - "Beige"
-              - "Grey"
-`
-
-	err := yaml.Unmarshal([]byte(data), &response)
-	if err != nil {
-		return nil, err
+	osbResponse := &osb.CatalogResponse{
+		Services: []osb.Service{
+			{
+				Name:          "example-starter-pack-service",
+				ID:            "4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a",
+				Description:   "The example service from the osb starter pack!",
+				Bindable:      true,
+				PlanUpdatable: truePtr(),
+				Metadata: map[string]interface{}{
+					"displayName": "Example starter pack service",
+					"imageUrl":    "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4",
+				},
+				Plans: []osb.Plan{
+					{
+						Name:        "default",
+						ID:          "86064792-7ea2-467b-af93-ac9694d96d5b",
+						Description: "The default plan for the starter pack example service",
+						Free:        truePtr(),
+						Schemas: &osb.Schemas{
+							ServiceInstance: &osb.ServiceInstanceSchema{
+								Create: &osb.InputParametersSchema{
+									Parameters: map[string]interface{}{
+										"type": "object",
+										"properties": map[string]interface{}{
+											"color": map[string]interface{}{
+												"type":    "string",
+												"default": "Clear",
+												"enum": []string{
+													"Clear",
+													"Beige",
+													"Grey",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
+
+	glog.Infof("catalog response: %#+v", osbResponse)
+
+	response.CatalogResponse = *osbResponse
 
 	return response, nil
 }
