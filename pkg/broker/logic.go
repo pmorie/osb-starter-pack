@@ -113,8 +113,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 	}
 
 	// Check to see if this is the same instance
-	if b.instances[request.InstanceID] != nil {
-		i := b.instances[request.InstanceID]
+	if i := b.instances[request.InstanceID]; i != nil {
 		if i.Match(exampleInstance) {
 			response.Exists = true
 			return &response, nil
