@@ -50,7 +50,7 @@ objects:
           image: ${IMAGE}
           imagePullPolicy: IfNotPresent
           command:
-          - /opt/servicebroker/servicebroker
+          - /opt/dataverse-broker/dataverse-broker
           args:
           - --port
           - "8080"

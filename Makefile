@@ -8,14 +8,14 @@ TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
 build:
-	go build -i github.com/SamiSousa/dataverse-broker/cmd/servicebroker
+	go build -i github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
 
 test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o dataverse-broker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/servicebroker
+	go build -o dataverse-broker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
 
 image: linux ## Builds a Linux based image
 	cp dataverse-broker-linux image/dataverse-broker
