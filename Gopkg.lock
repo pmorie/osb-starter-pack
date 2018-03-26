@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/pmorie/go-open-service-broker-client"
   packages = ["v2"]
-  revision = "b110ebaf119c4fcf81675ff01d62919d31819fd8"
-  version = "0.0.3"
+  revision = "87e2f174c3a1d416379eaa0cfe29f6fa0668e780"
+  version = "0.0.9"
 
 [[projects]]
   name = "github.com/pmorie/osb-broker-lib"
@@ -51,8 +51,8 @@
     "pkg/rest",
     "pkg/server"
   ]
-  revision = "09f9a56b8280b39c1fea3af905cbee0d99617c29"
-  version = "0.0.2"
+  revision = "9f86a620a18728c30e73a42e20e493d27f5a108d"
+  version = "0.0.5"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -99,6 +99,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "22cd12e4ea50b232cfe894cd8f24adcee0885946c5197fcd8f99eedd27bd5502"
+  inputs-digest = "7090af779a9391d1250e3898c8eb564ea3dbf62ac3d96caedd2be6dcaa718224"
   solver-name = "gps-cdcl"
   solver-version = 1
