@@ -10,6 +10,8 @@ implement an interface that uses the same types as the
 [`go-open-service-broker-client`](https://github.com/pmorie/go-open-service-broker-client)
 project.
 
+This project uses [`osb-starter-pack`](https://github.com/pmorie/osb-starter-pack).
+
 ## Who should use this project?
 
 You should use this project if you're interfacing a containerized application in Kubernetes that will utilize data stored on Dataverse.
@@ -56,21 +58,14 @@ $ cd $GOPATH/src/github.com/SamiSousa/dataverse-broker
 
 ### Deploy broker using Helm
 
-Deploy with Helm and pass custom image and tag name.
-Note: This also pushes the generated image with docker.
-
 ```console
-$ IMAGE=myimage TAG=latest make push deploy-helm
+$ make deploy-helm
 ```
 
 ### Deploy broker using Openshift
 
-Deploy to OpenShift cluster by passing a custom image and tag name.
-Note: You must already be logged into an OpenShift cluster. 
-This also pushes the generated image with docker.
-
 ```console
-$ IMAGE=myimage TAG=latest make push deploy-openshift
+$ make deploy-openshift
 ```
 
 Running either of these flavors of deploy targets will build the broker binary,
