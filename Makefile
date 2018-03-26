@@ -22,8 +22,9 @@ image: linux ## Builds a Linux based image
 	$(SUDO_CMD) docker build image/ -t "$(IMAGE):$(TAG)"
 
 clean: ## Cleans up build artifacts
-	rm -f image/dataverse-broker
+	rm -f dataverse-broker
 	rm -f dataverse-broker-linux
+	rm -f image/dataverse-broker
 
 push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
