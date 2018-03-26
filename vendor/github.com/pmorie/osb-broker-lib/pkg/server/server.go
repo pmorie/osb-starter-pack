@@ -30,6 +30,10 @@ type Server struct {
 func New(api *rest.APISurface, reg prom.Gatherer) *Server {
 	router := mux.NewRouter()
 
+	if api.EnableCORS {
+		router.Methods("OPTIONS").HandlerFunc(api.OptionsHandler)
+	}
+
 	router.HandleFunc("/v2/catalog", api.GetCatalogHandler).Methods("GET")
 	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", api.LastOperationHandler).Methods("GET")
 	router.HandleFunc("/v2/service_instances/{instance_id}", api.ProvisionHandler).Methods("PUT")

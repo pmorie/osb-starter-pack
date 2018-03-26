@@ -54,6 +54,9 @@ objects:
           args:
           - --port
           - "8080"
+          - -v
+          - "4"
+          - --logtostderr
           ports:
           - containerPort: 8080
           readinessProbe:
