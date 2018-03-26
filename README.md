@@ -1,16 +1,12 @@
-# Open Dataverse Broker
+# Dataverse Broker
 
 [![Build Status](https://travis-ci.org/SamiSousa/dataverse-broker.svg?branch=master)](https://travis-ci.org/SamiSousa/dataverse-broker "Travis")
 
 
 A go service broker for [Dataverse](https://dataverse.org) that implements the
-[Open Service Broker API](https://github.com/openservicebrokerapi/servicebroker) based on
-[`osb-broker-lib`](https://github.com/pmorie/osb-broker-lib). Broker authors
-implement an interface that uses the same types as the
-[`go-open-service-broker-client`](https://github.com/pmorie/go-open-service-broker-client)
-project.
+[Open Service Broker API](https://github.com/openservicebrokerapi/servicebroker).
 
-This project uses [`osb-starter-pack`](https://github.com/pmorie/osb-starter-pack).
+This project is an implementation of [`osb-starter-pack`](https://github.com/pmorie/osb-starter-pack).
 
 ## Who should use this project?
 

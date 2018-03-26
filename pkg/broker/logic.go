@@ -119,6 +119,15 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 
 	response.CatalogResponse = *osbResponse
 
+	// Debug unmarshall
+	// Print response to console
+	fmt.Println("Response: ")
+	res_print, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(res_print))
+
 	return response, nil
 }
 
@@ -132,12 +141,37 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 	response := broker.ProvisionResponse{}
 
+	// Create an example instance
 	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
 	b.instances[request.InstanceID] = exampleInstance
 
 	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
+
+	// Print request to console
+	fmt.Println("Request: ")
+	req_print, err := json.MarshalIndent(request, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(req_print))
+
+	// Print response to console
+	fmt.Println("Response: ")
+	res_print, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(res_print))
+
+	// Print b.instances
+	fmt.Print("b.instances:")
+	ins_print, err := json.MarshalIndent(b.instances, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(ins_print))
 
 	return &response, nil
 }
@@ -184,10 +218,35 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		BindResponse: osb.BindResponse{
 			Credentials: instance.Params,
 		},
+
 	}
 	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
+
+	// Print request to console
+	fmt.Println("Request: ")
+	req_print, err := json.MarshalIndent(request, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(req_print))
+
+	// Print response to console
+	fmt.Println("Response: ")
+	res_print, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(res_print))
+
+	// Print b.instances
+	fmt.Print("b.instances:")
+	ins_print, err := json.MarshalIndent(b.instances, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(ins_print))
 
 	return &response, nil
 }
@@ -338,6 +397,25 @@ func DataverseToService(dataverses []*DataverseDescription) string {
     free: true
     schemas:
       service_instance:
+        create:
+          "$schema": "http://json-schema.org/draft-04/schema"
+          "type": "object"
+          "title": "Parameters"
+          "properties":
+          - "name":
+              "title": "Some Name"
+              "type": "string"
+              "maxLength": 63
+              "default": "My Name"
+          - "color":
+              "title": "Color"
+              "type": "string"
+              "default": "Clear"
+              "enum":
+              - "Clear"
+              - "Beige"
+              - "Grey"
+      service_binding:
         create:
           "$schema": "http://json-schema.org/draft-04/schema"
           "type": "object"
