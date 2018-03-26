@@ -16,15 +16,24 @@ import (
 
 )
 
+// Server is the server for the OSB REST API and the metrics API. A Server glues
+// the HTTP operations to their implementations.
 type Server struct {
-	// Router is a mux.Router that registers the handlers for the different OSB
-	// API operations.
+	// Router is a mux.Router that registers the handlers for the HTTP
+	// operations:
+	//
+	// - OSB API
+	// - metrics API
 	Router *mux.Router
 }
 
 // New creates a new Router and registers all the necessary endpoints and handlers.
 func New(api *rest.APISurface, reg prom.Gatherer) *Server {
 	router := mux.NewRouter()
+
+	if api.EnableCORS {
+		router.Methods("OPTIONS").HandlerFunc(api.OptionsHandler)
+	}
 
 	router.HandleFunc("/v2/catalog", api.GetCatalogHandler).Methods("GET")
 	router.HandleFunc("/v2/service_instances/{instance_id}/last_operation", api.LastOperationHandler).Methods("GET")
