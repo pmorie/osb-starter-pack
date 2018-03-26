@@ -119,20 +119,11 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 
 	response.CatalogResponse = *osbResponse
 
-	// Debug unmarshall
-	// Print response to console
-	fmt.Println("Response: ")
-	res_print, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(res_print))
-
 	return response, nil
 }
 
 
-func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*osb.ProvisionResponse, error) {
+func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*broker.ProvisionResponse, error) {
 	// Your provision business logic goes here
 
 	// example implementation:
