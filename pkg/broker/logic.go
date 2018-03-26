@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"fmt"
 	"strings"
-	"gopkg.in/yaml.v2"
 
 	"github.com/golang/glog"
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
