@@ -100,7 +100,7 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 				Plans: []osb.Plan{
 					{
 						Name:        "default",
-						ID:          service_id+"-default",
+						ID:          service_id + "-default",
 						Description: "The default plan for " + service_name,
 						Free:        truePtr(),
 						Schemas: &osb.Schemas{
