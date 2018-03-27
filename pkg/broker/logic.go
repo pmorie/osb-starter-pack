@@ -88,7 +88,7 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 		}
 
 		services[i] = osb.Service{
-				Name:          service_dashname
+				Name:          service_dashname,
 				ID:            service_id,
 				Description:   service_description, // comes out blank
 				Bindable:      true,
