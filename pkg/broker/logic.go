@@ -157,7 +157,7 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 
 	osbResponse := &osb.CatalogResponse{
 		// use Services generated from Dataverse API
-		Services : services
+		Services : services,
 		/*
 		Services: []osb.Service{
 			{
