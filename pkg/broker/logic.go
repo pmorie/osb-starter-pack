@@ -57,10 +57,98 @@ func DataverseToYAML() string {
 	output := `
 ---
 services:
-` + DataverseToService(dataverses)
+` + DataverseToYAMLString(dataverses)
 
 	return output
 
+}
+
+func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, error) {
+	// Use DataverseDescription to populate osb.Service objects
+
+	services := make([]osb.Service, len(dataverses))
+
+	for i, dataverse := range dataverses {
+		// use fields in DataverseDescription to populate osb.Service fields
+
+		// check that each field has a value
+		service_dashname := strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1))
+		service_id := dataverse.Identifier
+		service_description := dataverse.Description
+		service_name := dataverse.Name
+		service_image_url := dataverse.Image_url
+		service_url := dataverse.Url
+
+		if service_description == ""{
+			service_description = "A Dataverse service"
+		}
+
+		if service_image_url == ""{
+			service_image_url = "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4"
+		}
+
+		services[i] = osb.Service{
+				Name:          service_dashname,
+				ID:            service_id,
+				Description:   service_description, // comes out blank
+				Bindable:      true,
+				PlanUpdatable: truePtr(),
+				Metadata: map[string]interface{}{
+					"displayName": service_name,
+					"imageUrl":    service_image_url,  // comes out blank
+				},
+				Plans: []osb.Plan{
+					{
+					Name:        "default",
+					ID:          service_id + "-default",
+					Description: "The default plan for " + service_name,
+					Free:        truePtr(),
+					Schemas: &osb.Schemas{
+						ServiceInstance: &osb.ServiceInstanceSchema{
+							Create: &osb.InputParametersSchema{
+								Parameters: map[string]interface{}{
+									"type": "object",
+									"properties": map[string]interface{}{
+										"coordinates" : map[string]interface{}{
+											"type":    "string",
+											"default": service_url,
+											"description": "URL coordinates to dataverse",
+										},
+										"credentials": map[string]interface{}{
+											"type":    "string",
+											"description": "API key to access restricted files and dataset on dataverse",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+
+	return services, nil
+}
+
+// Add option to take in whitelist config
+func GetDataverseServices(target_dataverse string) ([]osb.Service, error) {
+	//harvard := "https://dataverse.harvard.edu"
+	//target_dataverse := harvard //demo_dataverse
+
+	dataverses, err := GetDataverses(&target_dataverse, 3)
+
+	if err != nil{
+		panic(err)
+	}
+
+	services, err := DataverseToService(dataverses)
+
+	if err != nil{
+		panic(err)
+	}
+
+	return services, nil
 }
 
 func truePtr() *bool {
@@ -71,7 +159,17 @@ func truePtr() *bool {
 func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogResponse, error) {
 	// Your catalog business logic goes here
 	response := &broker.CatalogResponse{}
+
+	services, err :=  GetDataverseServices("https://dataverse.harvard.edu")
+
+	if err != nil {
+		panic(err)
+	}
+
 	osbResponse := &osb.CatalogResponse{
+		// use Services generated from Dataverse API
+		Services : services,
+		/*
 		Services: []osb.Service{
 			{
 				Name:          "example-starter-pack-service",
@@ -113,6 +211,7 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 				},
 			},
 		},
+		*/
 	}
 
 	glog.Infof("catalog response: %#+v", osbResponse)
@@ -153,7 +252,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 			}
 		}
 	}
-
+  
 	b.instances[request.InstanceID] = exampleInstance
 
 	if request.AcceptsIncomplete {
@@ -344,7 +443,7 @@ func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescripti
 	
 }
 
-func DataverseToService(dataverses []*DataverseDescription) string {
+func DataverseToYAMLString(dataverses []*DataverseDescription) string {
 
 	var services string
 
