@@ -70,21 +70,38 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 
 	for i, dataverse := range dataverses {
 		// use fields in DataverseDescription to populate osb.Service fields
+
+		// check that each field has a value
+		service_dashname := strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1))
+		service_id := dataverse.Identifier
+		service_description := dataverse.Description
+		service_name := dataverse.Name
+		service_image_url := dataverse.Image_url
+		service_url := dataverse.Url
+
+		if service_description == ""{
+			service_description = "A Dataverse service"
+		}
+
+		if service_image_url == ""{
+			service_image_url = "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4"
+		}
+
 		services[i] = osb.Service{
-				Name:          strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1)),
-				ID:            dataverse.Identifier,
-				Description:   dataverse.Description,
+				Name:          service_dashname
+				ID:            service_id,
+				Description:   service_description, // comes out blank
 				Bindable:      true,
 				PlanUpdatable: truePtr(),
 				Metadata: map[string]interface{}{
-					"displayName": dataverse.Name,
-					"imageUrl":    dataverse.Image_url,
+					"displayName": service_name,
+					"imageUrl":    service_image_url,  // comes out blank
 				},
 				Plans: []osb.Plan{
 					{
 						Name:        "default",
-						ID:          dataverse.Identifier+"-default",
-						Description: "The default plan for " + dataverse.Name + " dataverse",
+						ID:          service_id+"-default",
+						Description: "The default plan for " + service_name,
 						Free:        truePtr(),
 						Schemas: &osb.Schemas{
 							ServiceInstance: &osb.ServiceInstanceSchema{
@@ -102,7 +119,7 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 												},
 											"url" : map[string]interface{}{
 												"type":    "string",
-												"default": dataverse.Url,
+												"default": service_url,
 											},
 										},
 									},
