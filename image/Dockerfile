@@ -1,4 +1,4 @@
-FROM fedora
+FROM busybox
 
-ADD dataverse-broker /opt/dataverse-broker/dataverse-broker
-CMD /opt/dataverse-broker/dataverse-broker --help
+ADD servicebroker /opt/servicebroker/servicebroker
+CMD /opt/servicebroker/servicebroker --help

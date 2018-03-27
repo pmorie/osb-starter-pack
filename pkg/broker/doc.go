@@ -7,5 +7,4 @@
 //   business logic
 // - The NewBusinessLogic function, which creates a BusinessLogic from the
 //   Options the program is run with
-
-package broker // import "github.com/SamiSousa/dataverse-broker/pkg/broker"
+package broker // import "github.com/pmorie/osb-starter-pack/pkg/broker"

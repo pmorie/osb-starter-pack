@@ -16,7 +16,7 @@ import (
 	"github.com/pmorie/osb-broker-lib/pkg/metrics"
 	"github.com/pmorie/osb-broker-lib/pkg/rest"
 	"github.com/pmorie/osb-broker-lib/pkg/server"
-	"github.com/SamiSousa/dataverse-broker/pkg/broker"
+	"github.com/pmorie/osb-starter-pack/pkg/broker"
 )
 
 var options struct {
