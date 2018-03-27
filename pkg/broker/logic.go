@@ -99,28 +99,33 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 				},
 				Plans: []osb.Plan{
 					{
-						Name:        "default",
-						ID:          service_id + "-default",
-						Description: "The default plan for " + service_name,
-						Free:        truePtr(),
-						Schemas: &osb.Schemas{
-							ServiceInstance: &osb.ServiceInstanceSchema{
-								Create: &osb.InputParametersSchema{
-									Parameters: map[string]interface{}{
-										"type": "object",
-										"properties": map[string]interface{}{
-											"color": map[string]interface{}{
-												"type":    "string",
-												"default": "Clear",
-												"enum": []string{
-													"Clear",
-													"Beige",
-													"Grey",
-												},
-											"url" : map[string]interface{}{
-												"type":    "string",
-												"default": service_url,
+					Name:        "default",
+					ID:          service_id + "-default",
+					Description: "The default plan for " + service_name,
+					Free:        truePtr(),
+					Schemas: &osb.Schemas{
+						ServiceInstance: &osb.ServiceInstanceSchema{
+							Create: &osb.InputParametersSchema{
+								Parameters: map[string]interface{}{
+									"type": "object",
+									"properties": map[string]interface{}{
+										"color": map[string]interface{}{
+											"type":    "string",
+											"default": "Clear",
+											"enum": []string{
+												"Clear",
+												"Beige",
+												"Grey",
 											},
+										},
+										"coordinates" : map[string]interface{}{
+											"type":    "string",
+											"default": service_url,
+											"description": "URL coordinates to dataverse"
+										},
+										"credentials": map[string]interface{}{
+											"type":    "string",
+											"description": "API key to access restricted files and dataset on dataverse"
 										},
 									},
 								},
