@@ -109,15 +109,6 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 								Parameters: map[string]interface{}{
 									"type": "object",
 									"properties": map[string]interface{}{
-										"color": map[string]interface{}{
-											"type":    "string",
-											"default": "Clear",
-											"enum": []string{
-												"Clear",
-												"Beige",
-												"Grey",
-											},
-										},
 										"coordinates" : map[string]interface{}{
 											"type":    "string",
 											"default": service_url,
