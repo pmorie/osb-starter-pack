@@ -70,41 +70,39 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 
 	for i, dataverse := range dataverses {
 		// use fields in DataverseDescription to populate osb.Service fields
-		services[i] := osb.Service{
-				{
-					Name:          strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1)),
-					ID:            dataverse.Identifier,
-					Description:   dataverse.Description,
-					Bindable:      true,
-					PlanUpdatable: truePtr(),
-					Metadata: map[string]interface{}{
-						"displayName": dataverse.Name,
-						"imageUrl":    dataverse.Image_url,
-					},
-					Plans: []osb.Plan{
-						{
-							Name:        "default",
-							ID:          dataverse.Identifier+"-default",
-							Description: "The default plan for " + dataverse.Name + " dataverse",
-							Free:        truePtr(),
-							Schemas: &osb.Schemas{
-								ServiceInstance: &osb.ServiceInstanceSchema{
-									Create: &osb.InputParametersSchema{
-										Parameters: map[string]interface{}{
-											"type": "object",
-											"properties": map[string]interface{}{
-												"color": map[string]interface{}{
-													"type":    "string",
-													"default": "Clear",
-													"enum": []string{
-														"Clear",
-														"Beige",
-														"Grey",
-													},
-												"url" : map[string]interface{}{
-													"type":    "string",
-													"default": dataverse.Url,
+		services[i] = osb.Service{
+				Name:          strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1)),
+				ID:            dataverse.Identifier,
+				Description:   dataverse.Description,
+				Bindable:      true,
+				PlanUpdatable: truePtr(),
+				Metadata: map[string]interface{}{
+					"displayName": dataverse.Name,
+					"imageUrl":    dataverse.Image_url,
+				},
+				Plans: []osb.Plan{
+					{
+						Name:        "default",
+						ID:          dataverse.Identifier+"-default",
+						Description: "The default plan for " + dataverse.Name + " dataverse",
+						Free:        truePtr(),
+						Schemas: &osb.Schemas{
+							ServiceInstance: &osb.ServiceInstanceSchema{
+								Create: &osb.InputParametersSchema{
+									Parameters: map[string]interface{}{
+										"type": "object",
+										"properties": map[string]interface{}{
+											"color": map[string]interface{}{
+												"type":    "string",
+												"default": "Clear",
+												"enum": []string{
+													"Clear",
+													"Beige",
+													"Grey",
 												},
+											"url" : map[string]interface{}{
+												"type":    "string",
+												"default": dataverse.Url,
 											},
 										},
 									},
