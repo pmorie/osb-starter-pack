@@ -121,11 +121,11 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 										"coordinates" : map[string]interface{}{
 											"type":    "string",
 											"default": service_url,
-											"description": "URL coordinates to dataverse"
+											"description": "URL coordinates to dataverse",
 										},
 										"credentials": map[string]interface{}{
 											"type":    "string",
-											"description": "API key to access restricted files and dataset on dataverse"
+											"description": "API key to access restricted files and dataset on dataverse",
 										},
 									},
 								},
