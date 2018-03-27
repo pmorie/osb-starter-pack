@@ -37,7 +37,7 @@ deploy and begin iterating on.
 ### Get the project
 
 ```console
-$ go get github.com/SamiSousa/dataverse-broker/cmd/servicebroker
+$ go get github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
 ```
 
 Or clone the repo:
@@ -61,10 +61,10 @@ $ make deploy-helm
 ### Deploy broker using Openshift
 
 ```console
-$ make deploy-openshift
+$ make push deploy-openshift
 ```
 
-Running either of these flavors of deploy targets will build the broker binary,
+Running either of these flavors of deploy targets will build the dataverse-broker binary,
 build the image, deploy the broker into your Kubernetes, and add a
 `ClusterServiceBroker` to the service-catalog.
 

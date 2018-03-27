@@ -436,12 +436,6 @@ func DataverseToService(dataverses []*DataverseDescription) string {
 	return services
 }
 
-// MAY NOT BE COMPLIANT WITH GUID GEN
-func ReturnGUID() string {
-
-	return "4f6e6cf6-ffdd-425f-a2c7-3c9258ad246b"
-}
-
 // /Dataverse Structs
 
 // object returned by checksum for datafiles
