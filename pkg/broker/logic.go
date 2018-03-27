@@ -8,6 +8,7 @@ import (
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
+	"reflect"
 )
 
 // NewBusinessLogic is a hook that is called with the Options the program is run
@@ -104,7 +105,27 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 	response := broker.ProvisionResponse{}
 
-	exampleInstance := &exampleInstance{ID: request.InstanceID, Params: request.Parameters}
+	exampleInstance := &exampleInstance{
+		ID:        request.InstanceID,
+		ServiceID: request.ServiceID,
+		PlanID:    request.PlanID,
+		Params:    request.Parameters,
+	}
+
+	// Check to see if this is the same instance
+	if i := b.instances[request.InstanceID]; i != nil {
+		if i.Match(exampleInstance) {
+			response.Exists = true
+			return &response, nil
+		} else {
+			// Instance ID in use, this is a conflict.
+			description := "InstanceID in use"
+			return nil, osb.HTTPStatusCodeError{
+				StatusCode: http.StatusConflict,
+				Description: &description,
+			}
+		}
+	}
 	b.instances[request.InstanceID] = exampleInstance
 
 	if request.AcceptsIncomplete {
@@ -187,6 +208,12 @@ func (b *BusinessLogic) ValidateBrokerAPIVersion(version string) error {
 
 // exampleInstance is intended as an example of a type that holds information about a service instance
 type exampleInstance struct {
-	ID     string
-	Params map[string]interface{}
+	ID        string
+	ServiceID string
+	PlanID    string
+	Params    map[string]interface{}
+}
+
+func (i *exampleInstance) Match(other *exampleInstance) bool {
+	return reflect.DeepEqual(i, other)
 }
