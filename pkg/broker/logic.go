@@ -160,30 +160,6 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		response.Async = b.async
 	}
 
-	// Print request to console
-	fmt.Println("Request: ")
-	req_print, err := json.MarshalIndent(request, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(req_print))
-
-	// Print response to console
-	fmt.Println("Response: ")
-	res_print, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(res_print))
-
-	// Print b.instances
-	fmt.Print("b.instances:")
-	ins_print, err := json.MarshalIndent(b.instances, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(ins_print))
-
 	return &response, nil
 }
 
@@ -234,30 +210,6 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
-
-	// Print request to console
-	fmt.Println("Request: ")
-	req_print, err := json.MarshalIndent(request, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(req_print))
-
-	// Print response to console
-	fmt.Println("Response: ")
-	res_print, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(res_print))
-
-	// Print b.instances
-	fmt.Print("b.instances:")
-	ins_print, err := json.MarshalIndent(b.instances, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(ins_print))
 
 	return &response, nil
 }
@@ -461,12 +413,6 @@ func DataverseToService(dataverses []*DataverseDescription) string {
 	}
 
 	return services
-}
-
-// MAY NOT BE COMPLIANT WITH GUID GEN
-func ReturnGUID() string {
-
-	return "4f6e6cf6-ffdd-425f-a2c7-3c9258ad246b"
 }
 
 // /Dataverse Structs
