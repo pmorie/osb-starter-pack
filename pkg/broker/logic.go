@@ -252,6 +252,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 			}
 		}
 	}
+  
 	b.instances[request.InstanceID] = exampleInstance
 
 	if request.AcceptsIncomplete {
