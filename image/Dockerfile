@@ -1,4 +1,4 @@
 FROM fedora
 
-ADD servicebroker /opt/servicebroker/servicebroker
-CMD /opt/servicebroker/servicebroker --help
+ADD dataverse-broker /opt/dataverse-broker/dataverse-broker
+CMD /opt/dataverse-broker/dataverse-broker --help

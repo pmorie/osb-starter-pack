@@ -8,22 +8,22 @@ TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
 build:
-	go build -i github.com/SamiSousa/dataverse-broker/cmd/servicebroker
+	go build -i github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
 
 test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o servicebroker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/servicebroker
+	go build -o dataverse-broker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
 
 image: linux ## Builds a Linux based image
-	cp servicebroker-linux image/servicebroker
+	cp dataverse-broker-linux image/dataverse-broker
 	$(SUDO_CMD) docker build image/ -t "$(IMAGE):$(TAG)"
 
 clean: ## Cleans up build artifacts
-	rm -f servicebroker
-	rm -f servicebroker-linux
+	rm -f image/dataverse-broker
+	rm -f dataverse-broker-linux
 
 push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
@@ -34,7 +34,7 @@ deploy-helm: image ## Deploys image with helm
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image ## Deploys image to openshift
-	oc get project osb-starter-pack || oc new-project osb-starter-pack
+	oc get project dataverse-broker || oc new-project dataverse-broker
 	oc process -f openshift/starter-pack.yaml -p IMAGE=$(IMAGE):$(TAG) | oc apply -f -
 
 create-ns: ## Cleans up the namespaces
