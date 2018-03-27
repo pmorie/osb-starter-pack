@@ -70,7 +70,7 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 
 	for i, dataverse := range dataverses {
 		// use fields in DataverseDescription to populate osb.Service fields
-		services[i] = osb.Service{
+		services[i] := osb.Service{
 				{
 					Name:          strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1)),
 					ID:            dataverse.Identifier,
