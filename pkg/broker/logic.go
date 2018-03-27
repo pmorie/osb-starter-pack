@@ -57,10 +57,87 @@ func DataverseToYAML() string {
 	output := `
 ---
 services:
-` + DataverseToService(dataverses)
+` + DataverseToYAMLString(dataverses)
 
 	return output
 
+}
+
+func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, error) {
+	// Use DataverseDescription to populate osb.Service objects
+
+	services := make([]osb.Service, len(dataverses))
+
+	for i, dataverse := range dataverses {
+		// use fields in DataverseDescription to populate osb.Service fields
+		services[i] = osb.Service{
+				{
+					Name:          strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1)),
+					ID:            dataverse.Identifier,
+					Description:   dataverse.Description,
+					Bindable:      true,
+					PlanUpdatable: truePtr(),
+					Metadata: map[string]interface{}{
+						"displayName": dataverse.Name,
+						"imageUrl":    dataverse.Image_url,
+					},
+					Plans: []osb.Plan{
+						{
+							Name:        "default",
+							ID:          dataverse.Identifier+"-default",
+							Description: "The default plan for " + dataverse.Name + " dataverse",
+							Free:        truePtr(),
+							Schemas: &osb.Schemas{
+								ServiceInstance: &osb.ServiceInstanceSchema{
+									Create: &osb.InputParametersSchema{
+										Parameters: map[string]interface{}{
+											"type": "object",
+											"properties": map[string]interface{}{
+												"color": map[string]interface{}{
+													"type":    "string",
+													"default": "Clear",
+													"enum": []string{
+														"Clear",
+														"Beige",
+														"Grey",
+													},
+												"url" : map[string]interface{}{
+													"type":    "string",
+													"default": dataverse.Url,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+
+	return services, nil
+}
+
+// Add option to take in whitelist config
+func GetDataverseServices(target_dataverse string) ([]osb.Service, error) {
+	//harvard := "https://dataverse.harvard.edu"
+	//target_dataverse := harvard //demo_dataverse
+
+	dataverses, err := GetDataverses(&target_dataverse, 3)
+
+	if err != nil{
+		panic(err)
+	}
+
+	services, err := DataverseToService(dataverses)
+
+	if err != nil{
+		panic(err)
+	}
+
+	return services, nil
 }
 
 func truePtr() *bool {
@@ -71,7 +148,17 @@ func truePtr() *bool {
 func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogResponse, error) {
 	// Your catalog business logic goes here
 	response := &broker.CatalogResponse{}
+
+	services, err :=  GetDataverseServices("https://dataverse.harvard.edu")
+
+	if err != nil {
+		panic(err)
+	}
+
 	osbResponse := &osb.CatalogResponse{
+		// use Services generated from Dataverse API
+		Services : services
+		/*
 		Services: []osb.Service{
 			{
 				Name:          "example-starter-pack-service",
@@ -113,6 +200,7 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 				},
 			},
 		},
+		*/
 	}
 
 	glog.Infof("catalog response: %#+v", osbResponse)
@@ -344,7 +432,7 @@ func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescripti
 	
 }
 
-func DataverseToService(dataverses []*DataverseDescription) string {
+func DataverseToYAMLString(dataverses []*DataverseDescription) string {
 
 	var services string
 
