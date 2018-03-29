@@ -26,6 +26,9 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	return &BusinessLogic{
 		async:     o.Async,
 		instances: make(map[string]*exampleInstance, 10),
+		dataverse_server: "https://dataverse.harvard.edu",
+		// call dataverse server as little as possible
+		dataverses: GetDataverseServices("https://dataverse.harvard.edu"),
 	}, nil
 }
 
@@ -38,32 +41,15 @@ type BusinessLogic struct {
 	sync.RWMutex
 	// Add fields here! These fields are provided purely as an example
 	instances map[string]*exampleInstance
+
+	dataverse_server string
+	// dataverse map dataverse_id to *DataverseDescription
+	dataverses map[string]*DataverseDescription
 }
 
 var _ broker.Interface = &BusinessLogic{}
 
-
-func DataverseToYAML() string {
-
-	harvard := "https://dataverse.harvard.edu"
-	target_dataverse := harvard //demo_dataverse
-
-	dataverses, err := GetDataverses(&target_dataverse, 3)
-
-	if err != nil{
-		panic(err)
-	}
-
-	output := `
----
-services:
-` + DataverseToYAMLString(dataverses)
-
-	return output
-
-}
-
-func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, error) {
+func DataverseToService(dataverses map[string]*DataverseDescription, base string) ([]osb.Service, error) {
 	// Use DataverseDescription to populate osb.Service objects
 
 	services := make([]osb.Service, len(dataverses))
@@ -73,17 +59,17 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 
 		// check that each field has a value
 		service_dashname := strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1))
-		service_id := dataverse.Identifier
+		service_id := base + "/" + dataverse.Identifier
 		service_description := dataverse.Description
 		service_name := dataverse.Name
 		service_image_url := dataverse.Image_url
-		service_url := dataverse.Url
 
 		if service_description == ""{
 			service_description = "A Dataverse service"
 		}
 
 		if service_image_url == ""{
+			// default image for osb service
 			service_image_url = "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4"
 		}
 
@@ -109,31 +95,10 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 								Parameters: map[string]interface{}{
 									"type": "object",
 									"properties": map[string]interface{}{
-										"coordinates" : map[string]interface{}{
+										"credentials": map[string]interface{}{
 											"type":    "string",
-											"default": service_url,
-											"description": "URL coordinates to dataverse",
-										},
-									},
-								},
-							},
-						},
-						ServiceBinding: &osb.ServiceBindingSchema{
-							Create: &osb.RequestResponseSchema{
-								InputParametersSchema:osb.InputParametersSchema{
-									Parameters: map[string]interface{}{
-										"type": "object",
-										"properties": map[string]interface{}{
-											"coordinates" : map[string]interface{}{
-												"type":    "string",
-												"default": service_url,
-												"description": "URL coordinates to dataverse",
-											},
-											"credentials": map[string]interface{}{
-												"type":    "string",
-												"description": "API key to access restricted files and dataset on dataverse",
-												"default": "token",
-											},
+											"description": "API key to access restricted files and dataset on dataverse",
+											"default": "",
 										},
 									},
 								},
@@ -149,20 +114,18 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 }
 
 // Add option to take in whitelist config
-func GetDataverseServices(target_dataverse string) ([]osb.Service, error) {
-	//harvard := "https://dataverse.harvard.edu"
-	//target_dataverse := harvard //demo_dataverse
+func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescription, error) {
 
-	dataverses, err := GetDataverses(&target_dataverse, 3)
+	dataverses, err := SearchForDataverses(&target_dataverse, 3)
 
 	if err != nil{
 		panic(err)
 	}
+	
+	services := make(map[string]*DataverseDescription, len(dataverses))
 
-	services, err := DataverseToService(dataverses)
-
-	if err != nil{
-		panic(err)
+	for i, dataverse := range dataverses {
+		services[ target_dataverse + "/" +dataverse.Identifier] = dataverse
 	}
 
 	return services, nil
@@ -177,58 +140,15 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 	// Your catalog business logic goes here
 	response := &broker.CatalogResponse{}
 
-	services, err :=  GetDataverseServices("https://dataverse.harvard.edu")
+	// Create Service objects from dataverses
+	services, err :=  DataverseToService(b.dataverses, b.dataverse_server)
 
 	if err != nil {
 		panic(err)
 	}
 
 	osbResponse := &osb.CatalogResponse{
-		// use Services generated from Dataverse API
 		Services : services,
-		/*
-		Services: []osb.Service{
-			{
-				Name:          "example-starter-pack-service",
-				ID:            "4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a",
-				Description:   "The example service from the osb starter pack!",
-				Bindable:      true,
-				PlanUpdatable: truePtr(),
-				Metadata: map[string]interface{}{
-					"displayName": "Example starter pack service",
-					"imageUrl":    "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4",
-				},
-				Plans: []osb.Plan{
-					{
-						Name:        "default",
-						ID:          "86064792-7ea2-467b-af93-ac9694d96d5b",
-						Description: "The default plan for the starter pack example service",
-						Free:        truePtr(),
-						Schemas: &osb.Schemas{
-							ServiceInstance: &osb.ServiceInstanceSchema{
-								Create: &osb.InputParametersSchema{
-									Parameters: map[string]interface{}{
-										"type": "object",
-										"properties": map[string]interface{}{
-											"color": map[string]interface{}{
-												"type":    "string",
-												"default": "Clear",
-												"enum": []string{
-													"Clear",
-													"Beige",
-													"Grey",
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		*/
 	}
 
 	glog.Infof("catalog response: %#+v", osbResponse)
@@ -268,6 +188,37 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 				Description: &description,
 			}
 		}
+	}
+
+	// Check if a token is provided in request
+	if exampleInstance.Params["credentials"] != "" {
+		// check that the token is valid, make a call to the Dataverse server
+		// make a GET request
+		
+		resp, err := http.Get(b.dataverse_server + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"])
+
+		if err != nil{
+			panic(err)
+		}
+
+		// Must close response when finished
+		defer resp.Body.Close()
+
+		//convert resp into a DataverseResponse object
+		body, err := ioutil.ReadAll(resp.Body)
+
+		response := DataverseResponseWrapper{}
+		err = json.Unmarshal(body, &response)
+
+		if err != nil{
+			panic(err)
+		}
+
+		// failed GET means token is invalid (what to do?)
+		if response.Status != "OK"{
+			panic("Invalid api key")
+		}
+
 	}
   
 	b.instances[request.InstanceID] = exampleInstance
@@ -319,7 +270,8 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 
 	response := broker.BindResponse{
 		BindResponse: osb.BindResponse{
-			Credentials: instance.Params,
+			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
+			Credentials: b.dataverses[request.ServiceID].Url,
 		},
 
 	}
@@ -366,7 +318,7 @@ func (i *exampleInstance) Match(other *exampleInstance) bool {
 // get all dataverses within a Dataverse server
 // Takes a base Dataverse URL
 // Returns a slice of string JSON objects, representing each dataverse
-func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescription, error) {
+func SearchForDataverses(base *string, max_results_opt ... int) ([]*DataverseDescription, error) {
 	// send a GET request to Dataverse url
 	max_results := 0
 	if len(max_results_opt) > 0{
@@ -460,76 +412,6 @@ func GetDataverses(base *string, max_results_opt ... int) ([]*DataverseDescripti
 	
 }
 
-func DataverseToYAMLString(dataverses []*DataverseDescription) string {
-
-	var services string
-
-	for i := 0; i < len(dataverses); i++ {
-
-		services = services + fmt.Sprintf(
-`- name: %s
-  id: %s
-  description: none
-  bindable: true
-  plan_updateable: true
-  metadata:
-    displayName: "%s"
-    imageUrl: %s
-  plans:
-  - name: default
-    id: %s-default
-    description: The default plan for the second starter pack example service
-    free: true
-    schemas:
-      service_instance:
-        create:
-          "$schema": "http://json-schema.org/draft-04/schema"
-          "type": "object"
-          "title": "Parameters"
-          "properties":
-          - "name":
-              "title": "Some Name"
-              "type": "string"
-              "maxLength": 63
-              "default": "My Name"
-          - "color":
-              "title": "Color"
-              "type": "string"
-              "default": "Clear"
-              "enum":
-              - "Clear"
-              - "Beige"
-              - "Grey"
-      service_binding:
-        create:
-          "$schema": "http://json-schema.org/draft-04/schema"
-          "type": "object"
-          "title": "Parameters"
-          "properties":
-          - "name":
-              "title": "Some Name"
-              "type": "string"
-              "maxLength": 63
-              "default": "My Name"
-          - "color":
-              "title": "Color"
-              "type": "string"
-              "default": "Clear"
-              "enum":
-              - "Clear"
-              - "Beige"
-              - "Grey"
-`, 			strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)), 
-			dataverses[i].Identifier,
-			// Using the Identifier field as the id since it's unique to the Dataverse server;
-			// should concatenate ID of Dataverse server as well
-			strings.ToLower(strings.Replace(dataverses[i].Name, " ", "-", -1)),
-			dataverses[i].Image_url,
-			dataverses[i].Identifier) 
-	}
-
-	return services
-}
 
 // /Dataverse Structs
 
