@@ -195,6 +195,8 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 	}
 
 	// Check if a token is provided in request
+	glog.Infof("exampleInstance.Params: %#+v", exampleInstance.Params)
+	/*
 	if exampleInstance.Params["credentials"] != "" {
 		// check that the token is valid, make a call to the Dataverse server
 		// make a GET request
@@ -224,6 +226,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		}
 
 	}
+	*/
   
 	b.instances[request.InstanceID] = exampleInstance
 
@@ -275,7 +278,7 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	response := broker.BindResponse{
 		BindResponse: osb.BindResponse{
 			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
-			Credentials: {
+			Credentials: interface{}{
 				"url": b.dataverses[request.ServiceID].Url,
 				},
 		},
