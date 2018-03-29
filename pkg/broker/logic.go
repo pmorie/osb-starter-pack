@@ -128,7 +128,7 @@ func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescrip
 	
 	services := make(map[string]*DataverseDescription, len(dataverses))
 
-	for i, dataverse := range dataverses {
+	for _, dataverse := range dataverses {
 		services[ target_dataverse + "/" +dataverse.Identifier] = dataverse
 	}
 
@@ -279,7 +279,7 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		BindResponse: osb.BindResponse{
 			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
 			Credentials: map[string]interface{}{
-				"url": b.dataverses[request.ServiceID].Url,
+				"url": b.dataverses[instance.ServiceID].Url,
 				},
 		},
 
