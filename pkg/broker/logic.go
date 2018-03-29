@@ -219,7 +219,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 		if err != nil{
 			return nil, osb.HTTPStatusCodeError{
-				StatusCode: http.StatusNotFound
+				StatusCode: http.StatusNotFound,
 			}
 		}
 
@@ -228,7 +228,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 		// failed GET means token is invalid (what to do?)
 		if err != nil || response.Status != "OK"{
-			description := "Bad api key"
+			description := "Bad api key " + exampleInstance.Params["credentials"].(string)
 			return nil, osb.HTTPStatusCodeError{
 				StatusCode: http.StatusBadRequest,
 				Description: &description,
