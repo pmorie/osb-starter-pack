@@ -29,7 +29,7 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 		dataverse_server: "harvard",
 		dataverse_url: "https://dataverse.harvard.edu",
 		// call dataverse server as little as possible
-		dataverses: GetDataverseServices("https://dataverse.harvard.edu"),
+		dataverses: GetDataverseServices("https://dataverse.harvard.edu", "harvard"),
 	}, nil
 }
 
@@ -122,7 +122,7 @@ func DataverseToService(dataverses map[string]*DataverseDescription, server_name
 }
 
 // Add option to take in whitelist config
-func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescription) {
+func GetDataverseServices(target_dataverse string, server_alias string) (map[string]*DataverseDescription) {
 
 	dataverses, err := SearchForDataverses(&target_dataverse, 3)
 
@@ -133,7 +133,7 @@ func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescrip
 	services := make(map[string]*DataverseDescription, len(dataverses))
 
 	for _, dataverse := range dataverses {
-		services[ target_dataverse + "/" +dataverse.Identifier] = dataverse
+		services[ server_alias + "-" +dataverse.Identifier] = dataverse
 	}
 
 	return services
@@ -198,10 +198,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		}
 	}
 
-	// Check if a token is provided in request
-	glog.Infof("exampleInstance.Params: %#+v", exampleInstance.Params)
-	/*
-	if exampleInstance.Params["credentials"] != "" {
+	if exampleInstance.Params["credentials"].(string) != "" {
 		// check that the token is valid, make a call to the Dataverse server
 		// make a GET request
 		
@@ -230,7 +227,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		}
 
 	}
-	*/
+	
   
 	b.instances[request.InstanceID] = exampleInstance
 
