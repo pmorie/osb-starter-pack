@@ -206,7 +206,9 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		resp, err := http.Get(b.dataverse_url + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"].(string))
 
 		if err != nil{
-			panic(err)
+			return nil, osb.HTTPStatusCodeError{
+				StatusCode: http.StatusNotFound,
+			}
 		}
 
 		// Must close response when finished
@@ -215,16 +217,22 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		//convert resp into a DataverseResponse object
 		body, err := ioutil.ReadAll(resp.Body)
 
+		if err != nil{
+			return nil, osb.HTTPStatusCodeError{
+				StatusCode: http.StatusNotFound
+			}
+		}
+
 		response := DataverseResponseWrapper{}
 		err = json.Unmarshal(body, &response)
 
-		if err != nil{
-			panic(err)
-		}
-
 		// failed GET means token is invalid (what to do?)
-		if response.Status != "OK"{
-			panic("Invalid api key")
+		if err != nil || response.Status != "OK"{
+			description := "Bad api key"
+			return nil, osb.HTTPStatusCodeError{
+				StatusCode: http.StatusBadRequest,
+				Description: &description,
+			}
 		}
 
 	}
