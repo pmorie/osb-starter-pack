@@ -54,7 +54,9 @@ func DataverseToService(dataverses map[string]*DataverseDescription, base string
 
 	services := make([]osb.Service, len(dataverses))
 
-	for i, dataverse := range dataverses {
+	i := 0
+
+	for _, dataverse := range dataverses {
 		// use fields in DataverseDescription to populate osb.Service fields
 
 		// check that each field has a value
@@ -108,13 +110,15 @@ func DataverseToService(dataverses map[string]*DataverseDescription, base string
 				},
 			},
 		}
+
+		i += 1
 	}
 
 	return services, nil
 }
 
 // Add option to take in whitelist config
-func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescription, error) {
+func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescription) {
 
 	dataverses, err := SearchForDataverses(&target_dataverse, 3)
 
@@ -128,7 +132,7 @@ func GetDataverseServices(target_dataverse string) (map[string]*DataverseDescrip
 		services[ target_dataverse + "/" +dataverse.Identifier] = dataverse
 	}
 
-	return services, nil
+	return services
 }
 
 func truePtr() *bool {
@@ -271,7 +275,9 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	response := broker.BindResponse{
 		BindResponse: osb.BindResponse{
 			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
-			Credentials: b.dataverses[request.ServiceID].Url,
+			Credentials: {
+				"url": b.dataverses[request.ServiceID].Url,
+				},
 		},
 
 	}
