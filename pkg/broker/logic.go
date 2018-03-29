@@ -198,11 +198,12 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		}
 	}
 
+	// this should probably run asynchronously if possible
 	if exampleInstance.Params["credentials"].(string) != "" {
 		// check that the token is valid, make a call to the Dataverse server
 		// make a GET request
 		
-		resp, err := http.Get(b.dataverse_url + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"])
+		resp, err := http.Get(b.dataverse_url + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"].(string))
 
 		if err != nil{
 			panic(err)
