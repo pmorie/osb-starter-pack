@@ -26,7 +26,8 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	return &BusinessLogic{
 		async:     o.Async,
 		instances: make(map[string]*exampleInstance, 10),
-		dataverse_server: "https://dataverse.harvard.edu",
+		dataverse_server: "harvard",
+		dataverse_url: "https://dataverse.harvard.edu",
 		// call dataverse server as little as possible
 		dataverses: GetDataverseServices("https://dataverse.harvard.edu"),
 	}, nil
@@ -42,14 +43,17 @@ type BusinessLogic struct {
 	// Add fields here! These fields are provided purely as an example
 	instances map[string]*exampleInstance
 
+	// name of the dataverse server
 	dataverse_server string
+	// url to dataverse server
+	dataverse_url string
 	// dataverse map dataverse_id to *DataverseDescription
 	dataverses map[string]*DataverseDescription
 }
 
 var _ broker.Interface = &BusinessLogic{}
 
-func DataverseToService(dataverses map[string]*DataverseDescription, base string) ([]osb.Service, error) {
+func DataverseToService(dataverses map[string]*DataverseDescription, server_name string) ([]osb.Service, error) {
 	// Use DataverseDescription to populate osb.Service objects
 
 	services := make([]osb.Service, len(dataverses))
@@ -61,7 +65,7 @@ func DataverseToService(dataverses map[string]*DataverseDescription, base string
 
 		// check that each field has a value
 		service_dashname := strings.ToLower(strings.Replace(dataverse.Name, " ", "-", -1))
-		service_id := base + "/" + dataverse.Identifier
+		service_id := server_name + "-" + dataverse.Identifier
 		service_description := dataverse.Description
 		service_name := dataverse.Name
 		service_image_url := dataverse.Image_url
@@ -201,7 +205,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		// check that the token is valid, make a call to the Dataverse server
 		// make a GET request
 		
-		resp, err := http.Get(b.dataverse_server + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"])
+		resp, err := http.Get(b.dataverse_url + "/api/dataverses/:root?key=" + exampleInstance.Params["credentials"])
 
 		if err != nil{
 			panic(err)
