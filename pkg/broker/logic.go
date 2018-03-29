@@ -114,9 +114,26 @@ func DataverseToService(dataverses []*DataverseDescription) ([]osb.Service, erro
 											"default": service_url,
 											"description": "URL coordinates to dataverse",
 										},
-										"credentials": map[string]interface{}{
-											"type":    "string",
-											"description": "API key to access restricted files and dataset on dataverse",
+									},
+								},
+							},
+						},
+						ServiceBinding: &osb.ServiceBindingSchema{
+							Create: &osb.RequestResponseSchema{
+								InputParametersSchema:osb.InputParametersSchema{
+									Parameters: map[string]interface{}{
+										"type": "object",
+										"properties": map[string]interface{}{
+											"coordinates" : map[string]interface{}{
+												"type":    "string",
+												"default": service_url,
+												"description": "URL coordinates to dataverse",
+											},
+											"credentials": map[string]interface{}{
+												"type":    "string",
+												"description": "API key to access restricted files and dataset on dataverse",
+												"default": "token",
+											},
 										},
 									},
 								},
