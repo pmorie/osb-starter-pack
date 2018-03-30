@@ -24,6 +24,7 @@ image: linux ## Builds a Linux based image
 clean: ## Cleans up build artifacts
 	rm -f servicebroker
 	rm -f servicebroker-linux
+	rm -f image/servicebroker
 
 push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
