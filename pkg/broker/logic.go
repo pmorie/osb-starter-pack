@@ -228,7 +228,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 
 		// failed GET means token is invalid (what to do?)
 		if err != nil || response.Status != "OK"{
-			description := "Bad api key " + exampleInstance.Params["credentials"].(string)
+			description := "Bad api key '" + exampleInstance.Params["credentials"].(string) + "'"
 			return nil, osb.HTTPStatusCodeError{
 				StatusCode: http.StatusBadRequest,
 				Description: &description,
@@ -289,7 +289,8 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		BindResponse: osb.BindResponse{
 			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
 			Credentials: map[string]interface{}{
-				"url": b.dataverses[instance.ServiceID].Url,
+				"coordinates": b.dataverses[instance.ServiceID].Url,
+				"credentials": instance.Params["credentials"].(string),
 				},
 		},
 
