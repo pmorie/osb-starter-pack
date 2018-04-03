@@ -68,6 +68,16 @@ Running either of these flavors of deploy targets will build the dataverse-broke
 build the image, deploy the broker into your Kubernetes, and add a
 `ClusterServiceBroker` to the service-catalog.
 
+## Using a Dataverse Service
+
+### Provisioning a Service
+
+To provision a service, click on a dataverse subtree icon on the service catalog. You will be prompted to enter your API-token for this subtree (optional). The broker will check that your token has the credentials necessary to access that dataverse. The provision step will fail if your token is invalid.
+
+### Service Binding 
+
+Upon successful provision, the bind step will create a secret with the dataverse coordiates and your credentials. Use this secret in your application.
+
 ## Goals of this project
 
 - Make it easy for clients to interact with Dataverse
