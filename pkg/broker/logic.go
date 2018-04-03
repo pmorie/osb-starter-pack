@@ -199,7 +199,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 	}
 
 	// this should probably run asynchronously if possible
-	if exampleInstance.Params["credentials"].(string) != "" {
+	if exampleInstance.Params["credentials"] != nil && exampleInstance.Params["credentials"].(string) != "" {
 		// check that the token is valid, make a call to the Dataverse server
 		// make a GET request
 		
