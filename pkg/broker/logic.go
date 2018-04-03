@@ -285,12 +285,17 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 		}
 	}
 
+	credentials := ""
+	if instance.Params["credentials"] != nil {
+			credentials = instance.Params["credentials"].(string)
+	}
+
 	response := broker.BindResponse{
 		BindResponse: osb.BindResponse{
 			// Get the service URL based on the serviceID (which is funny because they're the same thing right now...)
 			Credentials: map[string]interface{}{
 				"coordinates": b.dataverses[instance.ServiceID].Url,
-				"credentials": instance.Params["credentials"].(string),
+				"credentials": credentials,
 				},
 		},
 
