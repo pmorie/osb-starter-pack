@@ -3,28 +3,42 @@ package broker
 
 import(
 	"testing"
+	//"reflect"
 
-	"github.com/pmorie/osb-broker-lib/pkg/broker"
-	osb "github.com/pmorie/go-open-service-broker-client/v2"
+	//"github.com/pmorie/osb-broker-lib/pkg/broker"
+	//osb "github.com/pmorie/go-open-service-broker-client/v2"
 	logic "github.com/SamiSousa/dataverse-broker/pkg/broker"
 )
 
 func TestBrokerLogic(t *testing.T){
 	// create a BusinessLogic struct instance (tests dataverse functions)
-	businessLogic, errCreate := logic.NewBusinessLogic(logic.Options{CatalogPath: "", Async: false})
+	//businessLogic, errCreate := logic.NewBusinessLogic(logic.Options{CatalogPath: "", Async: false})
+	_, errCreate := logic.NewBusinessLogic(logic.Options{CatalogPath: "", Async: false})
 
 	if errCreate != nil{
 		t.Errorf("Error on BusinessLogic creation: %#+v", errCreate)
 	}
 
+	/*
+	// add some instances to buisnessLogic
+	businessLogic.dataverses["test-service"] = &logic.dataverseInstance{
+		ID:        "demo-test-service",
+		ServiceID: "demo-test-service",
+		PlanID:    "demo-test-service-default",
+		ServerName: "demo",
+		ServerUrl: "https://demo.dataverse.org",
+		Description: &logic.DataverseDescription{},
+	}
+
 	// Run Provision on a couple of test cases:
 	// credentials blank
+	
 	_, errProvisionBlank := businessLogic.Provision(
 		&osb.ProvisionRequest{
-			InstanceID:	"harvard-ephelps",
+			InstanceID:	"test1",
 			AcceptsIncomplete:	false,
-			ServiceID:	"harvard-ephelps",
-			PlanID:	"harvard-ephelps-default",
+			ServiceID:	"demo-test-service",
+			PlanID:	"demo-test-service-default",
 			OrganizationGUID:	"bdc",
 			SpaceGUID:	"bdc",
 			Parameters:	map[string]interface{}{},
@@ -39,10 +53,10 @@ func TestBrokerLogic(t *testing.T){
 	// improper credentials
 	_, errProvisionImproper := businessLogic.Provision(
 		&osb.ProvisionRequest{
-			InstanceID:	"harvard-ephelps",
+			InstanceID:	"test2",
 			AcceptsIncomplete:	false,
-			ServiceID:	"harvard-ephelps",
-			PlanID:	"harvard-ephelps-default",
+			ServiceID:	"demo-test-service",
+			PlanID:	"demo-test-service-default",
 			OrganizationGUID:	"bdc",
 			SpaceGUID:	"bdc",
 			Parameters:	map[string]interface{}{
@@ -56,6 +70,8 @@ func TestBrokerLogic(t *testing.T){
 	if errProvisionImproper == nil {
 		t.Errorf("Error on Provision with invalid token: no error returned")
 	}
+	
+	*/
 
 	/*
 	// proper credentials
@@ -82,6 +98,7 @@ func TestBrokerLogic(t *testing.T){
 
 	// Run Bind on a couple of test cases
 	// credentials blank
+	/*
 	_, errBindBlank := businessLogic.Bind(
 		&osb.BindRequest{
 			BindingID:	"harvard-ephelps",
@@ -96,7 +113,9 @@ func TestBrokerLogic(t *testing.T){
 	if errBindBlank != nil{
 		t.Errorf("Error on Bind with no token: %#+v", errBindBlank)
 	}
+	*/
 
+	
 	/*
 	// credentials nonblank
 	bindResultProper, err := businessLogic.Bind(
@@ -120,5 +139,31 @@ func TestBrokerLogic(t *testing.T){
 		t.Errorf("Error on Bind: credentials and coordinates not passed properly")
 	}
 	*/
+
+}
+
+func TestUtils(t *testing.T) {
+
+	server_alias := "demo"
+	target_dataverse := "https://demo.dataverse.org"
+
+	whitelistPath := "./test/"
+
+	dataverses := logic.GetDataverseInstances(target_dataverse, server_alias)
+
+	for _, dataverse := range dataverses {
+		succ, err := logic.ServiceToFile(dataverse, whitelistPath)
+
+		if err != nil || succ != true {
+			t.Errorf("Error writing json to files: %#+v\n", err)
+		}
+		
+	}
+	
+	_, err := logic.FileToService(whitelistPath)
+
+	if err != nil {
+		t.Errorf("Error creating files: %#+v\n", err)
+	}
 
 }
