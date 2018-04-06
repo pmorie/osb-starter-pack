@@ -17,7 +17,9 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	// For example, if your BusinessLogic requires a parameter from the command
 	// line, you would unpack it from the Options and set it on the
 	// BusinessLogic here.
-	dataverseInstances, err := FileToService("./whitelist/")
+
+	// This is not ideal, create an environment variable for this path?
+	dataverseInstances, err := FileToService(o.CatalogPath)
 
 	if err != nil {
 		return nil, err
@@ -26,7 +28,7 @@ func NewBusinessLogic(o Options) (*BusinessLogic, error) {
 	dataverseMap := make(map[string]*dataverseInstance, len(dataverseInstances))
 
 	for _, dataverse := range dataverseInstances {
-		dataverseMap[dataverse.ID] = dataverse
+		dataverseMap[dataverse.ServiceID] = dataverse
 	}
 
 	return &BusinessLogic{
@@ -44,10 +46,10 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 	response := &broker.CatalogResponse{}
 
 	// Create Service objects from dataverses
-	services, err :=  DataverseToService(b.dataverses)
+	services, err := DataverseToService(b.dataverses)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	osbResponse := &osb.CatalogResponse{
@@ -68,6 +70,8 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 	// example implementation:
 	b.Lock()
 	defer b.Unlock()
+
+	glog.Infof("provision request: %#+v", request)
 
 	response := broker.ProvisionResponse{}
 
@@ -120,6 +124,8 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 		response.Async = b.async
 	}
 
+	glog.Infof("provision response: %#+v", response)
+
 	return &response, nil
 }
 
@@ -154,6 +160,8 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	b.Lock()
 	defer b.Unlock()
 
+	glog.Infof("bind request: %#+v", request)
+
 	instance, ok := b.instances[request.InstanceID]
 	if !ok {
 		return nil, osb.HTTPStatusCodeError{
@@ -178,6 +186,8 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 	if request.AcceptsIncomplete {
 		response.Async = b.async
 	}
+
+	glog.Infof("bind response: %#+v", response)
 
 	return &response, nil
 }

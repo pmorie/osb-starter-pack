@@ -4,13 +4,17 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+
 	"strconv"
 	"fmt"
 	"strings"
+	"regexp"
+
 	"os"
-	"reflect"
+	"path/filepath"
 
 	"github.com/golang/glog"
+	"reflect"
 
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 
@@ -22,13 +26,20 @@ func DataverseToService(dataverses map[string]*dataverseInstance) ([]osb.Service
 	services := make([]osb.Service, len(dataverses))
 
 	i := 0
+	reg, err := regexp.Compile("[^a-zA-Z0-9-.]+")
+	if err != nil {
+		return nil, err
+	}
 
 	for _, dataverse := range dataverses {
 		// use fields in DataverseDescription to populate osb.Service fields
 
 		// check that each field has a value
-		service_dashname := strings.ToLower(strings.Replace(dataverse.Description.Name, " ", "-", -1))
+		// This name MUST be alphanumeric, dashes, and periods ONLY (no spaces)
+		service_dashname := strings.ToLower(reg.ReplaceAllString(strings.Replace(dataverse.Description.Name, " ", "-", -1), ""))
+		
 		service_id := dataverse.ServiceID
+		plan_id := dataverse.PlanID
 		service_description := dataverse.Description.Description
 		service_name := dataverse.Description.Name
 		service_image_url := dataverse.Description.Image_url
@@ -43,19 +54,19 @@ func DataverseToService(dataverses map[string]*dataverseInstance) ([]osb.Service
 		}
 
 		services[i] = osb.Service{
-				Name:          service_dashname,
-				ID:            service_id,
-				Description:   service_description, // comes out blank
-				Bindable:      true,
-				PlanUpdatable: truePtr(),
-				Metadata: map[string]interface{}{
-					"displayName": service_name,
-					"imageUrl":    service_image_url,  // comes out blank
-				},
-				Plans: []osb.Plan{
-					{
+			Name:          service_dashname,
+			ID:            service_id,
+			Description:   service_description, // comes out blank
+			Bindable:      true,
+			PlanUpdatable: truePtr(),
+			Metadata: map[string]interface{}{
+				"displayName": service_name,
+				"imageUrl":    service_image_url,  // comes out blank
+			},
+			Plans: []osb.Plan{
+				{
 					Name:        "default",
-					ID:          service_id + "-default",
+					ID:          plan_id,
 					Description: "The default plan for " + service_name,
 					Free:        truePtr(),
 					Schemas: &osb.Schemas{
@@ -66,7 +77,7 @@ func DataverseToService(dataverses map[string]*dataverseInstance) ([]osb.Service
 									"properties": map[string]interface{}{
 										"credentials": map[string]interface{}{
 											"type":    "string",
-											"description": "API key to access restricted files and dataset on dataverse",
+											"description": "API key to access restricted files and datasets on Dataverse",
 											"default": "",
 										},
 									},
@@ -111,19 +122,20 @@ func GetDataverseInstances(target_dataverse string, server_alias string) (map[st
 
 func FileToService(path string) ([]*dataverseInstance, error) {
 	// take a file and turn it into dataverseInstances
-	// each file stores a JSON/YAML object for a whitelisted dataverse service
+	// each file stores a JSON object for a whitelisted dataverse service
 
 	files, err := ioutil.ReadDir(path)
 
 	if err != nil {
 		glog.Error(err)
+		return nil, err
 	}
 
 	instances := make([]*dataverseInstance, len(files))
 
 	for i, f := range files {
 		// read each file
-		text, err := ioutil.ReadFile(path + f.Name())
+		text, err := ioutil.ReadFile(filepath.Join(path,f.Name()))
 
 		if err != nil{
 			return nil, err
@@ -146,7 +158,7 @@ func FileToService(path string) ([]*dataverseInstance, error) {
 }
 
 func ServiceToFile(instance *dataverseInstance, path string) (bool, error) {
-	// take a service and store as JSON/YAML object in file
+	// take a service and store as JSON object in file
 	// save as a file in path
 
 	err := os.MkdirAll(path, os.ModePerm)
@@ -164,7 +176,7 @@ func ServiceToFile(instance *dataverseInstance, path string) (bool, error) {
 
 
 	// write to file
-	err = ioutil.WriteFile(path+instance.ServiceID+".json", jsonInstance, 0777)
+	err = ioutil.WriteFile(filepath.Join(path,instance.ServiceID+".json"), jsonInstance, 0777)
 
 	if err != nil {
 		return false, err

@@ -19,13 +19,13 @@ type BusinessLogic struct {
 
 // dataverseInstance holds information about a dataverse service instance
 type dataverseInstance struct {
-	ID        string
-	ServiceID string
-	PlanID    string
-	Description *DataverseDescription
-	ServerName string
-	ServerUrl string
-	Params    map[string]interface{} // Maybe add the DataverseDescription to this?
+	ID        string	`json:"id"`
+	ServiceID string	`json:"service_id"`
+	PlanID    string	`json:"plan_id"`
+	Description *DataverseDescription	`json:"description"`
+	ServerName string	`json:"server_name"`
+	ServerUrl string	`json:"server_url"`
+	Params    map[string]interface{} `json:"params"`
 }
 
 // Dataverse JSON Structs
@@ -64,6 +64,7 @@ type DataverseDescription struct{
     Checksum DatafileChecksum `json:"checksum,omitempty"`
 
     // Fields for advanced search (to be added ...)
+    Entity_id int `json:"entity_id,omitempty"`
     
 
 }

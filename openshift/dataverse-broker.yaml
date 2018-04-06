@@ -75,13 +75,7 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 2
-          volumeMounts:
-          - name: whitelist-volume
-            mountPath: /etc/config
-        volumes:
-        - name: whitelist-volume
-          configMap:
-            name: whitelist-config
+          
 
 parameters:
 - description: Dataverse service broker
