@@ -20,6 +20,7 @@ spec:
         release: "{{ .Release.Name }}"
         heritage: "{{ .Release.Service }}"
     spec:
+      serviceAccount: {{ template "fullname" . }}-service
       containers:
       - name: service-broker-skeleton
         image: {{ .Values.image }}
@@ -36,6 +37,9 @@ spec:
         {{- if .Values.tls.key}}
         - --tlsKey
         - "{{ .Values.tls.key }}"
+        {{- end}}
+        {{- if .Values.authenticate}}
+        - --authenticate-k8s-token
         {{- end}}
         - -v
         - "5"

@@ -3,6 +3,7 @@
 image: quay.io/osb-starter-pack/servicebroker:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: Always
+authenticate: true
 # Certificate details to use for TLS. Leave blank to not use TLS
 tls:
   # base-64 encoded PEM data for the TLS certificate

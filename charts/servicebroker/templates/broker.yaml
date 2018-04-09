@@ -5,4 +5,9 @@ metadata:
   name: broker-skeleton
 spec:
   url: http://{{ template "fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  authInfo:
+    bearer:
+      secretRef:
+        namespace: {{.Release.Namespace}}
+        name: {{ template "fullname" . }}
 {{- end }}
