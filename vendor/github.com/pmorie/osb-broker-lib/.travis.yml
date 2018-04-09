@@ -1,0 +1,5 @@
+language: go
+go_import_path: github.com/pmorie/osb-broker-lib
+go:
+  - 1.8.x
+script: "go build github.com/pmorie/osb-broker-lib/... && go test -v ./..."                                
