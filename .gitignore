@@ -1,5 +1,5 @@
-/servicebroker
-/servicebroker-linux
-/image/servicebroker
+/dataverse-broker
+/dataverse-broker-linux
+/image/dataverse-broker
 
 .idea/
