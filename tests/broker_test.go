@@ -8,12 +8,12 @@ import(
 
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
-	logic "github.com/SamiSousa/dataverse-broker/pkg/broker"
+	logic "github.com/dataverse-broker/dataverse-broker/pkg/broker"
 )
 
 func TestBrokerLogic(t *testing.T){
 	// create a BusinessLogic struct instance (tests dataverse functions)
-	businessLogic, errCreate := logic.NewBusinessLogic(logic.Options{CatalogPath: filepath.Join(os.Getenv("GOPATH"), "/src/github.com/SamiSousa/dataverse-broker/image/whitelist/"), Async: false})
+	businessLogic, errCreate := logic.NewBusinessLogic(logic.Options{CatalogPath: filepath.Join(os.Getenv("GOPATH"), "/src/github.com/dataverse-broker/dataverse-broker/image/whitelist/"), Async: false})
 
 	if errCreate != nil{
 		t.Errorf("Error on BusinessLogic creation: %#+v", errCreate)

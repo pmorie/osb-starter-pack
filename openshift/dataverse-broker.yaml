@@ -82,4 +82,4 @@ parameters:
   displayName: dataverse-broker
   name: IMAGE
   required: true
-  value: quay.io/brutto/dataverse-broker:latest
+  value: quay.io/dataverse-broker/dataverse-broker:latest
