@@ -1,5 +1,5 @@
 language: go
-go_import_path: github.com/SamiSousa/dataverse-broker
+go_import_path: github.com/dataverse-broker/dataverse-broker
 go:
   - 1.8.x
 script: "make build test"                                

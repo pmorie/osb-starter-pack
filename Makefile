@@ -3,19 +3,19 @@ ifdef USE_SUDO_FOR_DOCKER
 	SUDO_CMD = sudo
 endif
 
-IMAGE ?= quay.io/brutto/dataverse-broker
+IMAGE ?= quay.io/dataverse-broker/dataverse-broker
 TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
 build:
-	go build -i github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
+	go build -i github.com/dataverse-broker/dataverse-broker/cmd/dataverse-broker
 
 test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o dataverse-broker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
+	go build -o dataverse-broker-linux --ldflags="-s" github.com/dataverse-broker/dataverse-broker/cmd/dataverse-broker
 
 image: linux ## Builds a Linux based image
 	cp dataverse-broker-linux image/dataverse-broker

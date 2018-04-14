@@ -1,6 +1,6 @@
 # Default values for the broker-skeleton
 # Image to use
-image: quay.io/brutto/dataverse-broker:latest
+image: quay.io/dataverse-broker/dataverse-broker:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"
 imagePullPolicy: Always
 # Certificate details to use for TLS. Leave blank to not use TLS

@@ -1,6 +1,6 @@
 # Dataverse Broker
 
-[![Build Status](https://travis-ci.org/SamiSousa/dataverse-broker.svg?branch=master)](https://travis-ci.org/SamiSousa/dataverse-broker "Travis")
+[![Build Status](https://travis-ci.org/dataverse-broker/dataverse-broker.svg?branch=master)](https://travis-ci.org/dataverse-broker/dataverse-broker "Travis")
 
 
 A go service broker for [Dataverse](https://dataverse.org) that implements the
@@ -37,19 +37,19 @@ deploy and begin iterating on.
 ### Get the project
 
 ```console
-$ go get github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
+$ go get github.com/dataverse-broker/dataverse-broker/cmd/dataverse-broker
 ```
 
 Or clone the repo:
 
 ```console
-$ cd $GOPATH/src && mkdir -p github.com/SamiSousa && cd github.com/SamiSousa && git clone git://github.com/SamiSousa/dataverse-broker
+$ cd $GOPATH/src && mkdir -p github.com/dataverse-broker && cd github.com/dataverse-broker && git clone git://github.com/dataverse-broker/dataverse-broker
 ```
 
 Change into the project directory:
 
 ```console
-$ cd $GOPATH/src/github.com/SamiSousa/dataverse-broker
+$ cd $GOPATH/src/github.com/dataverse-broker/dataverse-broker
 ```
 
 ### Deploy broker using Helm

@@ -5,7 +5,7 @@
 
 build:
 ```actionscript
-go build -i github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
+go build -i github.com/dataverse-broker/dataverse-broker/cmd/dataverse-broker
 ```
 
 test: `## Runs the tests`
@@ -16,7 +16,7 @@ go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 linux: `## Builds a Linux executable`
 ```actionscript
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-go build -o dataverse-broker-linux --ldflags="-s" github.com/SamiSousa/dataverse-broker/cmd/dataverse-broker
+go build -o dataverse-broker-linux --ldflags="-s" github.com/dataverse-broker/dataverse-broker/cmd/dataverse-broker
 ```
 
 image: `linux ## Builds a Linux based image`
@@ -34,7 +34,7 @@ Next, login via the docker login command in terminal.
 `$ docker login quay.io`
 
 Push the image to Quay.io
-`$ docker push quay.io/brutto/dataverse-broker`
+`$ docker push quay.io/dataverse-broker/dataverse-broker`
 
 All of your pushed images are here:![]
 ![](https://github.com/bruttozz/airmules/blob/master/3.png)
@@ -42,7 +42,7 @@ All of your pushed images are here:![]
 ![](https://img.shields.io/github/stars/pandao/editor.md.svg)
 
 Your teammates can pull the image they need anytime by this command:
-`$ docker pull quay.io/brutto/dataverse-broker`
+`$ docker pull quay.io/dataverse-broker/dataverse-broker`
 
 
 ##Deployment on Openshift Container Platform
