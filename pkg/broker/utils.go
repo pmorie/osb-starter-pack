@@ -20,6 +20,35 @@ import (
 
 )
 
+//Displays metadata of a dataverse
+func DataverseMetadata(base string) {
+
+	//This search uri finds the metadata of the dataverse and displays info objects with according id's
+	search_uri := "/api/metadatablocks"
+
+	//This one searches through those info objects according to an id number (in this case 1) but you need to make sure
+	// it's of type dataverse, if not you get an error, will work on mitigating this 
+	//search_uri := "/api/dataverses/1"
+
+	// make a GET request
+	resp, err := http.Get(base + search_uri)
+
+	if err != nil {
+		// exit on error
+		fmt.Println("Error on http GET at address", base+search_uri)
+		fmt.Println(err)
+		panic("")
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	fmt.Println(string(body))
+
+
+}
+
 func DataverseToService(dataverses map[string]*dataverseInstance) ([]osb.Service, error) {
 	// Use DataverseDescription to populate osb.Service objects
 
