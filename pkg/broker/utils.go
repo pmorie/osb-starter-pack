@@ -20,21 +20,67 @@ import (
 
 )
 
-//Displays metadata of a dataverse
-func DataverseMetadata(base string) {
+//Displays the individual metadata of the metadatablocks from a dataverse through injection of their ids
+// if they are of type dataverse
+func DataverseMeta(base string, id float64) {
+
+	//Injecting string version of id into the search uri
+	search_uri := "/api/dataverses/" + fmt.Sprint(id)
+
+	//Variable that will store the json from the GET request
+	var status map[string]interface{}
+
+	//executing GET request
+	resp, err := http.Get(base + search_uri)
+
+	if err != nil {
+		//exit on error
+		fmt.Println("Error on http GET at address", base+search_uri)
+		fmt.Println(err)
+		panic("")
+	}
+
+	//Must close response when finished
+	defer resp.Body.Close()
+
+	//convert resp into a DataverseResponse object
+	body, err := ioutil.ReadAll(resp.Body)
+
+	err = json.Unmarshal(body, &status)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//Checking GET response json
+	if status["status"] == "ERROR" {
+
+		//Skipping..
+		fmt.Println("passing, not a dataverse.")
+
+	} else {
+
+		//Printing metadata
+		fmt.Println(string(body))
+
+	}
+
+}
+
+//Gathers the ids of the metadatablocks from a dataverse, calls on other function which displays the metadata
+// of the individual metadatablocks (DataverseMeta), and returns an array of those ids if needed
+func DataverseMetadataIds(base string) []float64{
 
 	//This search uri finds the metadata of the dataverse and displays info objects with according id's
 	search_uri := "/api/metadatablocks"
 
-	//This one searches through those info objects according to an id number (in this case 1) but you need to make sure
-	// it's of type dataverse, if not you get an error, will work on mitigating this 
-	//search_uri := "/api/dataverses/1"
+	//Variable that will store the json from the GET request
+	var metadata map[string]interface{}
 
-	// make a GET request
+	//make a GET request
 	resp, err := http.Get(base + search_uri)
 
 	if err != nil {
-		// exit on error
+		//exit on error
 		fmt.Println("Error on http GET at address", base+search_uri)
 		fmt.Println(err)
 		panic("")
@@ -44,7 +90,49 @@ func DataverseMetadata(base string) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 
-	fmt.Println(string(body))
+	//fmt.Println(string(body))
+
+	err = json.Unmarshal(body, &metadata)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//Creating return array object
+	ids := make([]float64, 0)
+
+	i := 0
+
+	//Iterating through metadatablock
+	for {
+
+		//This recover function is to catch the panic when the index is out of range
+		// indictating that the function has reached the end of the list of metadatablocks
+		// and thus returns the array
+		defer func() []float64 {
+			if r := recover(); r != nil {
+				//fmt.Println("Recovered", r)
+				//fmt.Println(ids)
+				return ids
+			}
+			return make([]float64, 0)
+		}()
+
+		//Retrieving ids from metadatablock
+		test := metadata["data"].([]interface{})[i].(map[string]interface{})["id"]
+		
+		//Asserting test's type before injecting to separate function and return array
+		string_test := test.(float64)
+		
+		//Calling function which displays the individual metadata of the metadatablocks
+		DataverseMeta(base, string_test)
+		
+		//Appending to the return array
+		ids = append(ids, string_test)
+		
+		//Incrementing iterator
+		i++
+
+	}
 
 
 }
