@@ -9,7 +9,7 @@ objects:
   metadata:
     name: dataverse-broker
   spec:
-    url: http://dataverse-broker.dataverse-broker.svc.cluster.local
+    url: http://dataverse-broker.bdc.svc.cluster.local
 
 - kind: ServiceAccount
   apiVersion: v1

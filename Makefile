@@ -35,7 +35,7 @@ deploy-helm: image ## Deploys image with helm
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image ## Deploys image to openshift
-	oc get project dataverse-broker || oc new-project dataverse-broker
+	oc get project bdc || oc new-project bdc
 	oc process -f openshift/dataverse-broker.yaml -p IMAGE=$(IMAGE):$(TAG) | oc apply -f -
 
 create-ns: ## Cleans up the namespaces
