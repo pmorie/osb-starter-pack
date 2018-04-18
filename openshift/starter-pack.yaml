@@ -20,6 +20,8 @@ objects:
   apiVersion: v1
   metadata:
     name: osb-starter-pack
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: 'osb-starter-pack-ssl'
     labels:
       app: osb-starter-pack
   spec:
@@ -27,8 +29,8 @@ objects:
       app: osb-starter-pack
     ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: 443
+      targetPort: 8443
 - kind: Deployment
   apiVersion: extensions/v1beta1
   metadata:
@@ -53,15 +55,19 @@ objects:
           - /opt/servicebroker/servicebroker
           args:
           - --port
-          - "8080"
+          - "8443"
           - -v
           - "4"
           - --logtostderr
+          - --tls-cert-file
+          - "/var/run/osb-starter-pack/starterpack.crt"
+          - --tls-private-key-file
+          - "/var/run/osb-starter-pack/starterpack.key"
           ports:
-          - containerPort: 8080
+          - containerPort: 8443
           readinessProbe:
             tcpSocket:
-              port: 8080
+              port: 8443
             failureThreshold: 1
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -69,12 +75,26 @@ objects:
             timeoutSeconds: 2
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: 8443
             failureThreshold: 3
             initialDelaySeconds: 10
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 2
+          volumeMounts:
+          - mountPath: /var/run/osb-starter-pack
+            name: osb-starter-pack-ssl
+            readOnly: true
+        volumes:
+        - name: osb-starter-pack-ssl
+          secret:
+            defaultMode: 420
+            secretName: osb-starter-pack-ssl
+            items:
+            - key: tls.crt
+              path: starterpack.crt
+            - key: tls.key
+              path: starterpack.key
 
 parameters:
 - description: Name of the image to use
