@@ -29,7 +29,7 @@ spec:
         - /opt/servicebroker/servicebroker
         args:
         - --port
-        - "8080"
+        - "8443"
         {{- if .Values.tls.cert}}
         - --tlsCert
         - "{{ .Values.tls.cert }}"
@@ -44,14 +44,31 @@ spec:
         - -v
         - "5"
         - -logtostderr
+        - --tls-cert-file
+        - "/var/run/osb-starter-pack/starterpack.crt"
+        - --tls-private-key-file
+        - "/var/run/osb-starter-pack/starterpack.key"
         ports:
-        - containerPort: 8080
+        - containerPort: 8443
         readinessProbe:
           tcpSocket:
-            port: 8080
+            port: 8443
           failureThreshold: 1
           initialDelaySeconds: 10
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
-
+        volumeMounts:
+        - mountPath: /var/run/osb-starter-pack
+          name: osb-starter-pack-ssl
+          readOnly: true
+      volumes:
+      - name: osb-starter-pack-ssl
+        secret:
+          defaultMode: 420
+          secretName: broker-skeleton-broker-skeleton-osb-starter-pack-cert
+          items:
+          - key: tls.crt
+            path: starterpack.crt
+          - key: tls.key
+            path: starterpack.key
