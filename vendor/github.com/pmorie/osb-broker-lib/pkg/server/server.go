@@ -94,6 +94,15 @@ func (s *Server) RunTLS(ctx context.Context, addr string, cert string, key strin
 	return s.run(ctx, addr, listenAndServe)
 }
 
+// RunTLSWithTLSFiles creates the HTTPS handler based on the certification
+// files that were passed and begins to listen on the specified address.
+func (s *Server) RunTLSWithTLSFiles(ctx context.Context, addr string, certFilePath string, keyFilePath string) error {
+	listenAndServe := func(srv *http.Server) error {
+		return srv.ListenAndServeTLS(certFilePath, keyFilePath)
+	}
+	return s.run(ctx, addr, listenAndServe)
+}
+
 func (s *Server) run(ctx context.Context, addr string, listenAndServe func(srv *http.Server) error) error {
 	glog.Infof("Starting server on %s\n", addr)
 	srv := &http.Server{
