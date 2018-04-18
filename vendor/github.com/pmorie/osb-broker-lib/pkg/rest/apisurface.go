@@ -86,7 +86,7 @@ func (s *APISurface) ProvisionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	glog.Infof("Received ProvisionRequest for instanceID %q", request.InstanceID)
+	glog.V(4).Infof("Received ProvisionRequest for instanceID %q", request.InstanceID)
 
 	c := &broker.RequestContext{
 		Writer:  w,
@@ -166,7 +166,7 @@ func (s *APISurface) DeprovisionHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	glog.Infof("Received DeprovisionRequest for instanceID %q", request.InstanceID)
+	glog.V(4).Infof("Received DeprovisionRequest for instanceID %q", request.InstanceID)
 
 	c := &broker.RequestContext{
 		Writer:  w,
@@ -230,7 +230,7 @@ func (s *APISurface) LastOperationHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	glog.Infof("Received LastOperationRequest for instanceID %q", request.InstanceID)
+	glog.V(4).Infof("Received LastOperationRequest for instanceID %q", request.InstanceID)
 
 	c := &broker.RequestContext{
 		Writer:  w,
@@ -287,7 +287,7 @@ func (s *APISurface) BindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	glog.Infof("Received BindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
+	glog.V(4).Infof("Received BindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
 
 	c := &broker.RequestContext{
 		Writer:  w,
@@ -346,7 +346,7 @@ func (s *APISurface) UnbindHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	glog.Infof("Received UnbindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
+	glog.V(4).Infof("Received UnbindRequest for instanceID %q, bindingID %q", request.InstanceID, request.BindingID)
 	c := &broker.RequestContext{
 		Writer:  w,
 		Request: r,
@@ -391,13 +391,14 @@ func (s *APISurface) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request, err := unpackUpdateRequest(r)
+	v := mux.Vars(r)
+	request, err := unpackUpdateRequest(r, v)
 	if err != nil {
 		s.writeError(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	glog.Infof("Received Update Request for instanceID %q", request.InstanceID)
+	glog.V(4).Infof("Received Update Request for instanceID %q", request.InstanceID)
 
 	c := &broker.RequestContext{
 		Writer:  w,
@@ -418,17 +419,18 @@ func (s *APISurface) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	s.writeResponse(w, status, response)
 }
 
-func unpackUpdateRequest(r *http.Request) (*osb.UpdateInstanceRequest, error) {
+func unpackUpdateRequest(r *http.Request, vars map[string]string) (*osb.UpdateInstanceRequest, error) {
 	osbRequest := &osb.UpdateInstanceRequest{}
-
-	vars := mux.Vars(r)
-	osbRequest.ServiceID = vars[osb.VarKeyServiceID]
-
-	planID := vars[osb.VarKeyPlanID]
-	if planID != "" {
-		osbRequest.PlanID = &planID
+	if err := unmarshalRequestBody(r, osbRequest); err != nil {
+		return nil, err
 	}
 
+	osbRequest.InstanceID = vars[osb.VarKeyInstanceID]
+
+	asyncQueryParamVal := r.FormValue(osb.AcceptsIncomplete)
+	if strings.ToLower(asyncQueryParamVal) == "true" {
+		osbRequest.AcceptsIncomplete = true
+	}
 	identity, err := retrieveOriginatingIdentity(r)
 	// This could be not found because platforms may support the feature
 	// but are not guaranteed to.

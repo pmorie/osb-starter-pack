@@ -51,8 +51,8 @@
     "pkg/rest",
     "pkg/server"
   ]
-  revision = "9f86a620a18728c30e73a42e20e493d27f5a108d"
-  version = "0.0.5"
+  revision = "cfcc33dad32c684db17e7e23ea3899df90a7b2c9"
+  version = "0.0.7"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -90,15 +90,9 @@
   ]
   revision = "282c8707aa210456a825798969cc27edda34992a"
 
-[[projects]]
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
-  version = "v2.1.1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7090af779a9391d1250e3898c8eb564ea3dbf62ac3d96caedd2be6dcaa718224"
+  inputs-digest = "5325cc15d11106487bfd4fbe818eeb876a643260eb08a56cd61cdac728bb17a7"
   solver-name = "gps-cdcl"
   solver-version = 1
