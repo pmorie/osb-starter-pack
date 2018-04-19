@@ -9,8 +9,8 @@ objects:
   metadata:
     name: osb-starter-pack
   spec:
-    url: http://osb-starter-pack.osb-starter-pack.svc.cluster.local
-
+    url: https://osb-starter-pack.osb-starter-pack.svc.cluster.local
+    caBundle: ${BROKER_CA_CERT}
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
@@ -102,3 +102,9 @@ parameters:
   name: IMAGE
   required: true
   value: quay.io/osb-starter-pack/servicebroker:latest
+
+- description: base64 encoded SSL CA Certificate
+  displayName: base64 encoded SSL CA Certificate
+  name: BROKER_CA_CERT
+  required: true
+  value: 
