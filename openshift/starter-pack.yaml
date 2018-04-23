@@ -4,6 +4,19 @@ metadata:
   name: osb-starter-pack
 objects:
 
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: osb-starter-pack-client
+
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: osb-starter-pack
+    annotations:
+      kubernetes.io/service-account.name: osb-starter-pack-client
+  type: kubernetes.io/service-account-token
+
 - apiVersion: servicecatalog.k8s.io/v1beta1
   kind: ClusterServiceBroker
   metadata:
@@ -11,9 +24,36 @@ objects:
   spec:
     url: https://osb-starter-pack.osb-starter-pack.svc.cluster.local
     caBundle: ${BROKER_CA_CERT}
+    authInfo:
+      bearer:
+        secretRef:
+          namespace: ${NAMESPACE}
+          name: osb-starter-pack
+
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
+    name: osb-starter-pack
+
+- kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: osb-starter-pack
+  rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["create"]
+
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: osb-starter-pack
+  subjects:
+    - kind: ServiceAccount
+      name: osb-starter-pack
+      namespace: ${NAMESPACE}
+  roleRef:
+    kind: ClusterRole
     name: osb-starter-pack
 
 - kind: Service
@@ -47,6 +87,7 @@ objects:
         labels:
           app: osb-starter-pack
       spec:
+        serviceAccount: osb-starter-pack
         containers:
         - name: service-osb-starter-pack
           image: ${IMAGE}
@@ -63,6 +104,7 @@ objects:
           - "/var/run/osb-starter-pack/starterpack.crt"
           - --tls-private-key-file
           - "/var/run/osb-starter-pack/starterpack.key"
+          - --authenticate-k8s-token
           ports:
           - containerPort: 8443
           readinessProbe:
@@ -108,3 +150,8 @@ parameters:
   name: BROKER_CA_CERT
   required: true
   value: 
+
+- description: Namespace that the starter pack is deployed to
+  displayName: Namespace
+  name: NAMESPACE
+  value: osb-starter-pack

@@ -1,0 +1,13 @@
+language: go
+go:
+  - "1.9.x"
+dist: trusty
+before_script:
+  - "go get -u golang.org/x/lint/golint"
+  - "go get -u github.com/golang/dep/cmd/dep"
+script:
+  - "make fmtcheck"
+  - "make vet"
+  - "make lint"
+  - "dep ensure"
+  - "go build ./... && go test -v ./..."
