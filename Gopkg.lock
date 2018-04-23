@@ -124,8 +124,8 @@
     "pkg/rest",
     "pkg/server"
   ]
-  revision = "9e13a3b4df29c9ffb7c2cf9e6155becca54f21a1"
-  version = "0.0.8"
+  revision = "052cd99aa13d67fd2c99ff853027a359f25dfbe7"
+  version = "0.0.9"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -377,6 +377,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6e0adbe25d5064a724e53a2d2cdaee7ee4f89a4fdfbcd31587eb7189cc3d15f0"
+  inputs-digest = "67a64b7c722dab52bdfd29ebafb4160e167912c196af7221ffeef98d2f5ade79"
   solver-name = "gps-cdcl"
   solver-version = 1
