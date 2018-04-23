@@ -24,6 +24,11 @@ type osbError struct {
 // Middleware - function that conforms to gorilla-mux middleware.
 func (tr TokenReviewMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/healthz" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		glog.Infof("Checking token for authentication")
 		auth := strings.TrimSpace(r.Header.Get("Authorization"))
 		if auth == "" {

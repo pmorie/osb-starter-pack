@@ -35,8 +35,8 @@
 
 [[constraint]]
   name = "github.com/pmorie/osb-broker-lib"
-  version = "0.0.7"
+  version = "0.0.9"
 
 [[constraint]]
-  version = "0.0.1"
   name = "github.com/shawn-hurley/osb-broker-k8s-lib"
+  version = "0.0.1"

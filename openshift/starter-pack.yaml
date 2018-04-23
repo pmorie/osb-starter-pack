@@ -108,17 +108,11 @@ objects:
           ports:
           - containerPort: 8443
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
+              scheme: HTTPS
               port: 8443
             failureThreshold: 1
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 2
-          livenessProbe:
-            tcpSocket:
-              port: 8443
-            failureThreshold: 3
             initialDelaySeconds: 10
             periodSeconds: 10
             successThreshold: 1
