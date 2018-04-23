@@ -4,10 +4,11 @@ kind: ClusterServiceBroker
 metadata:
   name: broker-skeleton
 spec:
-  url: http://{{ template "fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
-  authInfo:
-    bearer:
-      secretRef:
-        namespace: {{.Release.Namespace}}
-        name: {{ template "fullname" . }}
+  url: https://{{ template "fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  insecureSkipTLSVerify: true
+#  authInfo:
+#    bearer:
+#      secretRef:
+#        namespace: {{.Release.Namespace}}
+#        name: {{ template "fullname" . }}
 {{- end }}
