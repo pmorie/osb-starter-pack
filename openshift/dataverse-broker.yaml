@@ -127,12 +127,6 @@ parameters:
   required: true
   value: quay.io/dataverse-broker/dataverse-broker:latest
 
-- description: base64 encoded SSL CA Certificate
-  displayName: base64 encoded SSL CA Certificate
-  name: BROKER_CA_CERT
-  required: true
-  value:
-
 - description: Namespace that the starter pack is deployed to
   displayName: Namespace
   name: NAMESPACE
