@@ -4,6 +4,19 @@ metadata:
   name: dataverse-broker
 objects:
 
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: dataverse-broker-client #???
+
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: dataverse-broker
+    annotations:
+      kubernetes.io/service-account.name: dataverse-broker-client
+  type: kubernetes.io/service-account-token
+  
 - apiVersion: servicecatalog.k8s.io/v1beta1
   kind: ClusterServiceBroker
   metadata:
