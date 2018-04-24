@@ -9,17 +9,45 @@ objects:
   metadata:
     name: dataverse-broker
   spec:
-    url: http://dataverse-broker.bdc.svc.cluster.local
+    url: https://dataverse-broker.bdc.svc.cluster.local
+    authInfo:
+      bearer:
+        secretRef:
+          namespace: ${NAMESPACE}
+          name: dataverse-broker
 
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
     name: dataverse-broker
 
+- kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: dataverse-broker
+  rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["create"]
+
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: dataverse-broker
+  subjects:
+    - kind: ServiceAccount
+      name: dataverse-broker
+      namespace: ${NAMESPACE}
+  roleRef:
+    kind: ClusterRole
+    name: dataverse-broker
+
 - kind: Service
   apiVersion: v1
   metadata:
     name: dataverse-broker
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: 'dataverse-broker-ssl' # gotta check the ssl certificate
     labels:
       app: dataverse-broker
   spec:
@@ -27,8 +55,9 @@ objects:
       app: dataverse-broker
     ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: 443
+      targetPort: 8443
+
 - kind: Deployment
   apiVersion: extensions/v1beta1
   metadata:
@@ -45,6 +74,7 @@ objects:
         labels:
           app: dataverse-broker
       spec:
+        serviceAccount: dataverse-broker
         containers:
         - name: service-dataverse-broker
           image: ${IMAGE}
@@ -53,15 +83,20 @@ objects:
           - /opt/dataverse-broker/dataverse-broker
           args:
           - --port
-          - "8080"
+          - "8443"
           - -v
           - "4"
           - --logtostderr
+          - --tls-cert-file
+          - "/var/run/dataverse-broker/dataversebroker.crt"
+          - --tls-private-key-file
+          - "/var/run/dataverse-broker/dataversebroker.key"
+          - --authenticate-k8s-token
           ports:
-          - containerPort: 8080
+          - containerPort: 8443
           readinessProbe:
             tcpSocket:
-              port: 8080
+              port: 8443
             failureThreshold: 1
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -69,13 +104,26 @@ objects:
             timeoutSeconds: 2
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: 8443
             failureThreshold: 3
             initialDelaySeconds: 10
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 2
-          
+          volumeMounts:
+          - mountPath: /var/run/dataverse-broker
+            name: dataverse-broker-ssl
+            readOnly: true
+        volumes:
+        - name: dataverse-broker-ssl
+          secret:
+            defaultMode: 420
+            secretName: dataverse-broker-ssl
+            items:
+            - key: tls.crt
+              path: dataversebroker.crt
+            - key: tls.key
+              path: dataversebroker.key
 
 parameters:
 - description: Dataverse service broker
@@ -83,3 +131,14 @@ parameters:
   name: IMAGE
   required: true
   value: quay.io/dataverse-broker/dataverse-broker:latest
+
+- description: base64 encoded SSL CA Certificate
+  displayName: base64 encoded SSL CA Certificate
+  name: BROKER_CA_CERT
+  required: true
+  value:
+
+- description: Namespace that the starter pack is deployed to
+  displayName: Namespace
+  name: NAMESPACE
+  value: dataverse-broker
