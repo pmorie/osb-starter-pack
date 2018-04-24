@@ -10,12 +10,6 @@ objects:
     name: dataverse-broker
   spec:
     url: https://dataverse-broker.bdc.svc.cluster.local
-    caBundle: ${BROKER_CA_CERT}
-    authInfo:
-      bearer:
-        secretRef:
-          namespace: ${NAMESPACE}
-          name: dataverse-broker
 
 - kind: ServiceAccount
   apiVersion: v1
