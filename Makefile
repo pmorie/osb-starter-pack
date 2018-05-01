@@ -35,7 +35,7 @@ deploy-helm: image ## Deploys image with helm
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image ## Deploys image to openshift
-	oc get project osb-starter-pack || oc new-project osb-starter-pack
+	oc project osb-starter-pack || oc new-project osb-starter-pack
 	openshift/deploy.sh $(IMAGE):$(TAG)
 
 create-ns: ## Cleans up the namespaces
