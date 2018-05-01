@@ -164,10 +164,10 @@
   revision = "282c8707aa210456a825798969cc27edda34992a"
 
 [[projects]]
-  branch = "master"
   name = "github.com/shawn-hurley/osb-broker-k8s-lib"
   packages = ["middleware"]
-  revision = "2c9c925010961d20fc74cc033b7869c044907e8e"
+  revision = "bed19ac36ffea109578b1de667c0e5805cb6dc40"
+  version = "0.0.3"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -377,6 +377,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "67a64b7c722dab52bdfd29ebafb4160e167912c196af7221ffeef98d2f5ade79"
+  inputs-digest = "491d072e79bb43cccc1acd2bb33a9110bafbe9023ee963ab797fb6b4db2d91f1"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -43,6 +43,17 @@ objects:
   - apiGroups: ["authentication.k8s.io"]
     resources: ["tokenreviews"]
     verbs: ["create"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["subjectaccessreviews"]
+    verbs: ["create"]
+
+- kind: ClusterRole
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: access-osb-starter-pack
+  rules:
+  - nonResourceURLs: ["/v2", "/v2/*"]
+    verbs: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
 - kind: ClusterRoleBinding
   apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -55,6 +66,18 @@ objects:
   roleRef:
     kind: ClusterRole
     name: osb-starter-pack
+
+- kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: osb-starter-pack-client
+  subjects:
+    - kind: ServiceAccount
+      name: osb-starter-pack-client
+      namespace: ${NAMESPACE}
+  roleRef:
+    kind: ClusterRole
+    name: access-osb-starter-pack
 
 - kind: Service
   apiVersion: v1

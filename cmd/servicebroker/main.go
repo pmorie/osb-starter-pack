@@ -98,9 +98,14 @@ func runWithContext(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		// Create a User Info Authorizer.
+		authz := middleware.SARUserInfoAuthorizer{
+			SAR: k8sClient.AuthorizationV1().SubjectAccessReviews(),
+		}
 		// create TokenReviewMiddleware
 		tr := middleware.TokenReviewMiddleware{
 			TokenReview: k8sClient.Authentication().TokenReviews(),
+			Authorizer:  authz,
 		}
 		// Use TokenReviewMiddleware.
 		s.Router.Use(tr.Middleware)

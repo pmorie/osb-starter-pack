@@ -15,6 +15,7 @@ import (
 // token review.
 type TokenReviewMiddleware struct {
 	TokenReview v1.TokenReviewInterface
+	Authorizer  UserInfoAuthorizer
 }
 
 type osbError struct {
@@ -29,7 +30,7 @@ func (tr TokenReviewMiddleware) Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		glog.Infof("Checking token for authentication")
+		glog.V(3).Infof("Request to %v; checking token for authentication", r.RequestURI)
 		auth := strings.TrimSpace(r.Header.Get("Authorization"))
 		if auth == "" {
 			writeOSBStatusCodeErrorResponse(w, http.StatusUnauthorized, osbError{
@@ -69,7 +70,20 @@ func (tr TokenReviewMiddleware) Middleware(next http.Handler) http.Handler {
 			glog.Infof("user was not authenticated")
 			return
 		}
-		//Log debug user that has been authenticated
+		glog.V(3).Infof("token passed authentication")
+		// If UserInfoAuthorizer is defined check that the user is authorized.
+		if tr.Authorizer != nil {
+			glog.V(3).Infof("Checking user: %v for authorization", t.Status.User)
+			decision, err := tr.Authorizer.Authorize(t.Status.User, r)
+			if decision == DecisionDeny || decision == DecisionNoOpinion || err != nil {
+				writeOSBStatusCodeErrorResponse(w, http.StatusUnauthorized, osbError{
+					Description: "unable to authorize user",
+				})
+				glog.Infof("unable to authorize user: %#+v\n err: %v\n", t.Status.User, err)
+				return
+			}
+			glog.V(3).Infof("user: %v for passed authorization", t.Status.User)
+		}
 		next.ServeHTTP(w, r)
 	})
 }
