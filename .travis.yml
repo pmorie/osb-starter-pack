@@ -1,5 +1,26 @@
 language: go
+
+services:
+  - docker
+
 go_import_path: github.com/pmorie/osb-starter-pack
 go:
   - 1.8.x
-script: "make build test"                                
+
+env:
+  - IMAGE=quay.io/osb-starter-pack/servicebroker
+script:
+  - "make build test"
+
+before_deploy:
+  - make image "${IMAGE}"
+  - docker login quay.io -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+  - docker tag "$IMAGE" "${IMAGE}:latest"
+  - docker tag "$IMAGE" "${IMAGE}:${TRAVIS_TAG}"
+
+deploy:
+  provider: script
+  script: docker push "${IMAGE}:latest" && docker push "${IMAGE}:${TRAVIS_TAG}"
+  on:
+    branch: master
+    tags: true
