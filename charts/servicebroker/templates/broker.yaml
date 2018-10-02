@@ -4,8 +4,7 @@ kind: ClusterServiceBroker
 metadata:
   name: broker-skeleton
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "5"
+    "helm.sh/hook": crd-install
   labels:
     app: {{ template "fullname" . }}
     chart: "{{ .Chart.Name }}--{{ .Chart.Version }}"
