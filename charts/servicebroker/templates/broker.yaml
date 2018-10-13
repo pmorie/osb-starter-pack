@@ -3,16 +3,8 @@ apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ClusterServiceBroker
 metadata:
   name: broker-skeleton
-  annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "5"
-  labels:
-    app: {{ template "fullname" . }}
-    chart: "{{ .Chart.Name }}--{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
 spec:
-  url: https://{{ template "fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  url: https://broker-skeleton-broker-skeleton.broker-skeleton.svc.cluster.local
   insecureSkipTLSVerify: true
 {{- if .Values.authenticate}}
   authInfo:
