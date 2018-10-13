@@ -15,7 +15,7 @@ test: ## Runs the tests
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -o servicebroker-linux --ldflags="-s" github.com/cclin81922/osb-starter-pack/cmd/servicebroker
 
 image: linux ## Builds a Linux based image
 	cp servicebroker-linux image/servicebroker
@@ -33,6 +33,13 @@ deploy-helm: image ## Deploys image with helm
 	helm upgrade --install broker-skeleton --namespace broker-skeleton \
 	charts/servicebroker \
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
+
+purge-sc:
+	helm delete --purge broker-skeleton
+	kubectl delete ClusterServiceBroker broker-skeleton # BUG can't delete it
+	kubectl delete ns broker-skeleton
+	helm delete --purge catalog
+	kubectl delete ns catalog 
 
 deploy-openshift: image ## Deploys image to openshift
 	oc project osb-starter-pack || oc new-project osb-starter-pack
