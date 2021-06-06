@@ -45,13 +45,13 @@ $ go get github.com/pmorie/osb-starter-pack/cmd/servicebroker
 Or clone the repo:
 
 ```console
-$ cd $GOPATH/src && mkdir -p github.com/pmorie && cd github.com/pmorie && git clone git://github.com/pmorie/osb-starter-pack
+$ cd $(go env GOPATH)/src && mkdir -p github.com/pmorie && cd github.com/pmorie && git clone git://github.com/pmorie/osb-starter-pack
 ```
 
 Change into the project directory:
 
 ```console
-$ cd $GOPATH/src/github.com/pmorie/osb-starter-pack
+$ cd $(go env GOPATH)/src/github.com/pmorie/osb-starter-pack
 ```
 
 ### Deploy broker using Helm
