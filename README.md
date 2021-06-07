@@ -60,7 +60,7 @@ Deploy with Helm and pass custom image and tag name.
 Note: This also pushes the generated image with docker.
 
 ```console
-$ IMAGE=myimage TAG=latest make push deploy-helm
+$ GO111MODULE=off IMAGE=myimage TAG=latest make push deploy-helm
 ```
 
 ### Deploy broker using Openshift
@@ -70,7 +70,7 @@ Note: You must already be logged into an OpenShift cluster.
 This also pushes the generated image with docker.
 
 ```console
-$ IMAGE=myimage TAG=latest make push deploy-openshift
+$ GO111MODULE=off IMAGE=myimage TAG=latest make push deploy-openshift
 ```
 
 Running either of these flavors of deploy targets will build the broker binary,
